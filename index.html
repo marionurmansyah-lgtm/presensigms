@@ -5,277 +5,177 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Presensi GMS</title>
 
-<!-- FONT & ICON -->
+<!-- ICON & CHART -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-<!-- CHART -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{
-  font-family: Arial, sans-serif;
-  background:#f4f6fb;
-  margin:0;
-}
+body{margin:0;font-family:Arial;background:#f4f6fb}
 .hidden{display:none}
-.card{
-  max-width:480px;
-  margin:20px auto;
-  background:#fff;
-  border-radius:14px;
-  padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.1)
-}
-h2{text-align:center;margin:10px 0}
-input,select,textarea,button{
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  border-radius:8px;
-  border:1px solid #ccc
-}
-button{
-  cursor:pointer;
-  border:none;
-  font-weight:bold
-}
+.container{max-width:1100px;margin:auto;padding:20px}
+.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:15px;box-shadow:0 8px 25px rgba(0,0,0,.08)}
+.btn{padding:12px;border:none;border-radius:8px;font-size:14px;cursor:pointer}
 .btn-primary{background:#2a5298;color:#fff}
 .btn-danger{background:#e74c3c;color:#fff}
 .btn-success{background:#27ae60;color:#fff}
-.tab{
-  display:flex;
-  gap:6px;
-  margin:10px 0
-}
-.tab button{
-  flex:1;
-  font-size:13px
-}
-.table{
-  width:100%;
-  font-size:13px;
-  border-collapse:collapse
-}
-.table th,.table td{
-  border-bottom:1px solid #ddd;
-  padding:6px
-}
-.popup{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:999
-}
-.popup-box{
-  background:#fff;
-  padding:20px;
-  border-radius:12px;
-  max-width:320px;
-  text-align:center
-}
-.popup-success{border-left:6px solid #27ae60}
-.popup-error{border-left:6px solid #e74c3c}
-
-/* CAMERA */
-.camera{
-  position:fixed;
-  inset:0;
-  background:#000;
-  z-index:9999
-}
-.camera video{
-  width:100%;
-  height:100%;
-  object-fit:cover
-}
-.camera-controls{
-  position:absolute;
-  bottom:20px;
-  width:100%;
-  display:flex;
-  justify-content:space-around
-}
+input,select{width:100%;padding:10px;margin-top:6px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc}
+nav{background:#2a5298;color:#fff;padding:12px}
+nav span{font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
+.badge{background:#e74c3c;color:#fff;padding:3px 8px;border-radius:12px;font-size:12px}
+video{width:100%;border-radius:10px}
+canvas{max-width:100%}
 </style>
 </head>
 
 <body>
 
-<!-- ================= LOGIN ================= -->
-<div id="loginPage" class="card">
-  <img src="logo.png" style="max-width:120px;display:block;margin:auto">
-  <h2>Presensi GMS</h2>
-  <input id="loginId" placeholder="ID Karyawan">
+<nav>
+  <span>Presensi GMS</span>
+  <button class="btn btn-danger" style="float:right" onclick="logout()">Logout</button>
+</nav>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="loginBox" class="card">
+  <center>
+    <img src="data:image/png;base64,LOGO_BASE64_DI_SINI" width="120"><br><br>
+    <b>Sistem Presensi Digital</b>
+  </center><br>
   <input id="loginNama" placeholder="Nama Lengkap">
-  <button class="btn-primary" onclick="login()">Login</button>
+  <input id="loginId" placeholder="ID Karyawan">
+  <button class="btn btn-primary" onclick="login()">Login</button>
 </div>
 
-<!-- ================= USER DASHBOARD ================= -->
-<div id="userPage" class="card hidden">
-  <h2 id="userWelcome"></h2>
+<!-- USER DASHBOARD -->
+<div id="userDash" class="hidden">
 
-  <button class="btn-success" onclick="openCamera('IN')">
-    <i class="fa fa-camera"></i> Clock In
-  </button>
-
-  <button class="btn-danger" onclick="openCamera('OUT')">
-    <i class="fa fa-camera"></i> Clock Out
-  </button>
-
-  <div class="tab">
-    <button onclick="showTab('absen')">Riwayat Absen</button>
-    <button onclick="showTab('ajuan')">Pengajuan</button>
-    <button onclick="showTab('riwayat')">Riwayat Pengajuan</button>
+  <div class="card">
+    <b id="userInfo"></b><br>
+    <small id="userLokasi"></small>
   </div>
 
-  <div id="tab-absen"></div>
-  <div id="tab-ajuan" class="hidden">
+  <div class="grid">
+    <button class="btn btn-success" onclick="openCamera('in')">
+      <i class="fa fa-camera"></i> Clock In
+    </button>
+    <button class="btn btn-danger" onclick="openCamera('out')">
+      <i class="fa fa-camera"></i> Clock Out
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>Pengajuan</h3>
     <select id="jenis">
       <option>Izin</option>
       <option>Sakit</option>
       <option>Cuti</option>
     </select>
-    <input type="date" id="tglPengajuan">
-    <textarea id="alasan" placeholder="Alasan"></textarea>
-    <button class="btn-primary" onclick="kirimPengajuan()">Kirim</button>
+    <input id="alasan" placeholder="Alasan">
+    <button class="btn btn-primary" onclick="kirimPengajuan()">Kirim</button>
   </div>
-  <div id="tab-riwayat" class="hidden"></div>
 
-  <button onclick="logout()">Logout</button>
-</div>
-
-<!-- ================= ADMIN DASHBOARD ================= -->
-<div id="adminPage" class="card hidden">
-  <h2>Dashboard Admin</h2>
-  <canvas id="chart"></canvas>
-  <button class="btn-primary" onclick="download()">Download Rekap</button>
-  <div id="adminTable"></div>
-  <button onclick="logout()">Logout</button>
-</div>
-
-<!-- ================= CAMERA ================= -->
-<div id="camera" class="camera hidden">
-  <video id="video" autoplay></video>
-  <div class="camera-controls">
-    <button class="btn-danger" onclick="closeCamera()">X</button>
-    <button class="btn-success" onclick="capture()">📸</button>
+  <div class="card">
+    <h3>Riwayat Absensi</h3>
+    <div id="riwayat"></div>
   </div>
-  <canvas id="canvas" class="hidden"></canvas>
 </div>
 
-<!-- ================= POPUP ================= -->
-<div id="popup" class="popup hidden">
-  <div id="popupBox" class="popup-box"></div>
+<!-- ADMIN DASHBOARD -->
+<div id="adminDash" class="hidden">
+
+  <div class="grid">
+    <div class="card"><canvas id="chartHadir"></canvas></div>
+    <div class="card"><canvas id="chartRanking"></canvas></div>
+  </div>
+
+  <div class="card">
+    <h3>Approval Pengajuan</h3>
+    <div id="listPengajuan"></div>
+  </div>
+
+  <div class="card">
+    <button class="btn btn-primary" onclick="downloadAbsensi()">
+      <i class="fa fa-download"></i> Download Rekap
+    </button>
+  </div>
+
+</div>
+
+<!-- CAMERA -->
+<div id="camBox" class="hidden card">
+  <video id="video" autoplay></video><br><br>
+  <button class="btn btn-success" onclick="capture()">Ambil Foto</button>
+  <button class="btn btn-danger" onclick="closeCam()">Batal</button>
+</div>
+
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbzrS_SSkeStNLrdppule2LxSCZGOyby9L4ekAfzHUdERbRBFqd82hGkI6_h3BpxI-M4YA/exec';
+const API="https://script.google.com/macros/s/AKfycbzrS_SSkeStNLrdppule2LxSCZGOyby9L4ekAfzHUdERbRBFqd82hGkI6_h3BpxI-M4YA/exec";
+let user={},modeCam="",stream,photo="";
 
-let user={}, mode='', stream=null, foto='', aksi='';
-
-// ===== LOGIN =====
 async function login(){
-  const id=loginId.value.trim();
-  const nama=loginNama.value.trim();
-  const r=await fetch(${API_URL}?action=login&id=${id}&nama=${nama});
-  const j=await r.json();
-  if(!j.success){alert(j.message);return}
+  let nama=loginNama.value,id=loginId.value;
+  let r=await fetch(`${API}?action=login&id=${id}&nama=${nama}`);
+  let j=await r.json();
+  if(!j.success){alert("Login gagal");return;}
   user=j.data;
-  loginPage.classList.add('hidden');
-  if(user.role==='admin'){adminPage.classList.remove('hidden');loadAdmin()}
-  else{userPage.classList.remove('hidden');userWelcome.innerText='Halo '+user.nama;loadUser()}
+  loginBox.classList.add("hidden");
+  if(user.role==="AdminGMS001"){adminDash.classList.remove("hidden");loadAdmin();}
+  else{userDash.classList.remove("hidden");loadUser();}
 }
 
-// ===== USER =====
-async function loadUser(){
-  loadAbsensi();
-  loadPengajuan();
-}
-async function loadAbsensi(){
-  const r=await fetch(${API_URL}?action=getAbsensi&id=${user.id});
-  const j=await r.json();
-  let html='<table class="table"><tr><th>Tgl</th><th>Masuk</th><th>Pulang</th></tr>';
-  j.data.forEach(x=>{
-    html+=<tr><td>${x.tanggal}</td><td>${x.clockIn||'-'}</td><td>${x.clockOut||'-'}</td></tr>;
-  });
-  html+='</table>';
-  document.getElementById('tab-absen').innerHTML=html;
-}
-async function loadPengajuan(){
-  const r=await fetch(${API_URL}?action=getPengajuan&id=${user.id});
-  const j=await r.json();
-  let html='<table class="table"><tr><th>Tgl</th><th>Jenis</th><th>Status</th></tr>';
-  j.data.forEach(x=>{
-    html+=<tr><td>${x.tanggal}</td><td>${x.jenis}</td><td>${x.status}</td></tr>;
-  });
-  html+='</table>';
-  tab-riwayat.innerHTML=html;
-}
-async function kirimPengajuan(){
-  const p=new URLSearchParams({
-    action:'pengajuan',
-    id:user.id,
-    nama:user.nama,
-    tanggal:tglPengajuan.value,
-    jenis:jenis.value,
-    alasan:alasan.value,
-    lokasiKerja:user.lokasiKerja
-  });
-  const r=await fetch(API_URL+'?'+p.toString());
-  const j=await r.json();
-  alert(j.message||'Terkirim');
-}
+function logout(){localStorage.clear();location.reload();}
 
-// ===== CAMERA =====
 async function openCamera(m){
-  aksi=m;
-  camera.classList.remove('hidden');
+  modeCam=m;
+  camBox.classList.remove("hidden");
   stream=await navigator.mediaDevices.getUserMedia({video:true});
   video.srcObject=stream;
 }
-function closeCamera(){
-  camera.classList.add('hidden');
+
+function closeCam(){
+  camBox.classList.add("hidden");
   stream.getTracks().forEach(t=>t.stop());
 }
+
 function capture(){
-  canvas.width=video.videoWidth;
-  canvas.height=video.videoHeight;
-  canvas.getContext('2d').drawImage(video,0,0);
-  foto=canvas.toDataURL('image/jpeg');
-  closeCamera();
-  navigator.geolocation.getCurrentPosition(pos=>{
-    submitClock(pos.coords.latitude,pos.coords.longitude)
-  });
-}
-async function submitClock(lat,lng){
-  const r=await fetch(${API_URL}?action=${aksi==='IN'?'clockIn':'clockOut'}&id=${user.id}&nama=${user.nama}&lat=${lat}&lng=${lng}&lokasiKerja=${user.lokasiKerja});
-  const j=await r.json();
-  alert(j.message);
-  loadAbsensi();
+  let c=document.createElement("canvas");
+  c.width=video.videoWidth;c.height=video.videoHeight;
+  c.getContext("2d").drawImage(video,0,0);
+  photo=c.toDataURL("image/jpeg").replace(/^data:image\/jpeg;base64,/,"");
+  closeCam();
+  submitAbsen();
 }
 
-// ===== ADMIN =====
+async function submitAbsen(){
+  navigator.geolocation.getCurrentPosition(async p=>{
+    let url=`${API}?action=${modeCam==="in"?"clockIn":"clockOut"}&id=${user.id}&nama=${user.nama}&lat=${p.coords.latitude}&lng=${p.coords.longitude}&foto=${photo}`;
+    let r=await fetch(url);let j=await r.json();
+    alert(j.message);
+  });
+}
+
+async function kirimPengajuan(){
+  let url=`${API}?action=pengajuan&id=${user.id}&nama=${user.nama}&jenis=${jenis.value}&alasan=${alasan.value}`;
+  let r=await fetch(url);alert("Terkirim");
+}
+
+async function loadUser(){
+  userInfo.innerText=user.nama+" ("+user.id+")";
+}
+
 async function loadAdmin(){
-  const r=await fetch(${API_URL}?action=getAbsensi);
-  const j=await r.json();
-  let map={};
-  j.data.forEach(x=>{map[x.nama]=(map[x.nama]||0)+1});
-  new Chart(chart,{
-    type:'bar',
-    data:{labels:Object.keys(map),datasets:[{data:Object.values(map),backgroundColor:'#2a5298'}]}
-  });
+  new Chart(chartHadir,{type:"bar",data:{labels:["Hadir","Tidak"],datasets:[{data:[12,3],backgroundColor:["#27ae60","#e74c3c"]}]}});
+  new Chart(chartRanking,{type:"line",data:{labels:["A","B","C"],datasets:[{data:[20,15,10],borderColor:"#2a5298"}]}});
 }
 
-// ===== UI =====
-function showTab(t){
-  ['absen','ajuan','riwayat'].forEach(x=>{
-    document.getElementById('tab-'+x).classList.add('hidden')
-  });
-  document.getElementById('tab-'+t).classList.remove('hidden')
+function downloadAbsensi(){
+  window.open(`${API}?action=downloadAbsensi`);
 }
-function logout(){location.reload()}
 </script>
+
 </body>
 </html>
