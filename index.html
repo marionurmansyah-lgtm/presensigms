@@ -1,219 +1,212 @@
 <!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Presensi GMS</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presensi GMS</title>
 
-  <!-- FONT AWESOME -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .card {
-      max-width: 420px;
-      margin: auto;
-      background: #fff;
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.1);
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    .btn-primary {
-      background: #2a5298;
-      color: #fff;
-    }
-
-    .btn-danger {
-      background: #e74c3c;
-      color: #fff;
-      margin-top: 10px;
-    }
-
-    .hidden { display: none; }
-
-    /* CAMERA */
-    .camera-modal {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 9999;
-    }
-
-    .camera-modal video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .camera-controls {
-      position: absolute;
-      bottom: 30px;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-    }
-  </style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f4f6fb;
+  min-height:100vh;
+  padding:16px;
+}
+.card{
+  max-width:430px;
+  margin:auto;
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
+.hidden{display:none}
+h2{text-align:center;margin-bottom:12px}
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+textarea{resize:vertical;min-height:80px}
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+.btn-primary{background:#2a5298;color:#fff}
+.btn-success{background:#1abc9c;color:#fff}
+.btn-danger{background:#e74c3c;color:#fff;margin-top:8px}
+.footer{
+  text-align:center;
+  font-size:11px;
+  color:#777;
+  margin-top:14px;
+}
+.badge{
+  padding:4px 8px;
+  border-radius:6px;
+  font-size:11px;
+  background:#eef;
+}
+.notice{
+  background:#e8f4ff;
+  padding:10px;
+  border-radius:8px;
+  font-size:13px;
+  margin-bottom:10px;
+}
+</style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
+<!-- ================= LOGIN ================= -->
 <div id="loginPage" class="card">
-  <h2>Login Presensi</h2>
-  <input id="loginNama" placeholder="Nama">
-  <input id="loginNik" placeholder="ID Karyawan">
+  <h2>Presensi GMS</h2>
+  <p style="text-align:center;font-size:13px;margin-bottom:12px">
+    Sistem Presensi Digital
+  </p>
+
+  <input id="loginNama" placeholder="Nama Lengkap">
+  <input id="loginId" placeholder="ID Karyawan">
+
   <button class="btn-primary" onclick="login()">
     <i class="fa-solid fa-right-to-bracket"></i> Login
   </button>
+
+  <div class="footer">
+    Supported by: <b>Klase Auto Graha</b><br>
+    Rio Nurmansyah
+  </div>
 </div>
 
-<!-- USER DASHBOARD -->
+<!-- ================= USER DASHBOARD ================= -->
 <div id="userDashboard" class="card hidden">
   <h2>Dashboard</h2>
-  <p id="welcome"></p>
 
-  <button class="btn-primary" onclick="startClockIn()">
-    <i class="fa-solid fa-camera"></i> Clock In
-  </button>
-
-  <button class="btn-danger" onclick="logout()">
-    <i class="fa-solid fa-right-from-bracket"></i> Logout
-  </button>
-</div>
-
-<!-- CAMERA -->
-<div id="cameraModal" class="camera-modal hidden">
-  <video id="cameraVideo" autoplay playsinline></video>
-
-  <div class="camera-controls">
-    <button class="btn-danger" onclick="closeCamera()">❌</button>
-    <button class="btn-primary" onclick="capturePhoto()">📸</button>
+  <div class="notice">
+    <b id="uNama"></b><br>
+    ID: <span id="uId"></span><br>
+    Lokasi Kerja: <span id="uLokasi"></span>
   </div>
 
-  <canvas id="cameraCanvas" class="hidden"></canvas>
+  <button class="btn-success" onclick="clockIn()">
+    <i class="fa-solid fa-clock"></i> Clock In
+  </button>
+
+  <button class="btn-danger" onclick="clockOut()">
+    <i class="fa-solid fa-clock"></i> Clock Out
+  </button>
+
+  <hr style="margin:14px 0">
+
+  <h3>Pengajuan</h3>
+  <select id="pjJenis">
+    <option value="">Pilih Jenis</option>
+    <option value="Izin">Izin</option>
+    <option value="Sakit">Sakit</option>
+    <option value="Cuti">Cuti</option>
+  </select>
+  <textarea id="pjAlasan" placeholder="Alasan pengajuan"></textarea>
+  <button class="btn-primary" onclick="kirimPengajuan()">
+    Kirim Pengajuan
+  </button>
+
+  <button class="btn-danger" onclick="logout()">Logout</button>
 </div>
 
 <script>
-  // ================= CONFIG =================
-  const API_URL = 'https://script.google.com/macros/s/AKfycbwP8_Z8lXpHob8pKmQwI4P-8eU84u39Zl-ZRXpQCSWmK99DyxUjqWqfGUro8NoIJcHm/exec';
+/* ================= CONFIG ================= */
+const API_URL = "https://script.google.com/macros/s/AKfycbzrS_SSkeStNLrdppule2LxSCZGOyby9L4ekAfzHUdERbRBFqd82hGkI6_h3BpxI-M4YA/exec";
 
-  let currentUser = null;
-  let cameraStream = null;
-  let photoBase64 = '';
+/* ================= STATE ================= */
+let currentUser = null;
 
-  // ================= LOGIN =================
-  async function login() {
-    const nama = loginNama.value.trim();
-    const nik  = loginNik.value.trim();
+/* ================= LOGIN ================= */
+async function login(){
+  const nama = loginNama.value.trim();
+  const id   = loginId.value.trim();
+  if(!nama || !id){ alert("Lengkapi data"); return; }
 
-    if (!nama || !nik) {
-      alert('Nama & ID wajib diisi');
-      return;
-    }
+  const res = await fetch(
+    ${API_URL}?action=login&id=${encodeURIComponent(id)}&nama=${encodeURIComponent(nama)}
+  );
+  const json = await res.json();
+  if(!json.success){ alert(json.message); return; }
 
-    const res = await fetch(
-      `${API_URL}?action=login&nik=${encodeURIComponent(nik)}&nama=${encodeURIComponent(nama)}`
-    );
-    const json = await res.json();
+  currentUser = json.data;
+  localStorage.setItem("user",JSON.stringify(currentUser));
 
-    if (!json.success) {
-      alert(json.message);
-      return;
-    }
+  loginPage.classList.add("hidden");
+  userDashboard.classList.remove("hidden");
 
-    currentUser = { nik, nama, role: json.role };
-    localStorage.setItem('user', JSON.stringify(currentUser));
+  uNama.innerText = currentUser.nama;
+  uId.innerText   = currentUser.id;
+  uLokasi.innerText = currentUser.lokasiKerja || "-";
+}
 
-    loginPage.classList.add('hidden');
-    userDashboard.classList.remove('hidden');
-    welcome.innerText = `Halo, ${nama}`;
-  }
+/* ================= GPS HELPER ================= */
+function withGPS(callback){
+  navigator.geolocation.getCurrentPosition(
+    pos => callback(pos.coords.latitude,pos.coords.longitude),
+    () => alert("GPS tidak aktif / ditolak")
+  );
+}
 
-  function logout() {
-    localStorage.clear();
-    location.reload();
-  }
+/* ================= CLOCK IN ================= */
+function clockIn(){
+  withGPS((lat,lng)=>{
+    fetch(${API_URL}?action=clockIn&id=${currentUser.id}&lat=${lat}&lng=${lng})
+    .then(r=>r.json()).then(j=>alert(j.message));
+  });
+}
 
-  // ================= CAMERA =================
-  async function startClockIn() {
-    cameraModal.classList.remove('hidden');
-    cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" },
-      audio: false
-    });
-    cameraVideo.srcObject = cameraStream;
-  }
+/* ================= CLOCK OUT ================= */
+function clockOut(){
+  withGPS((lat,lng)=>{
+    fetch(${API_URL}?action=clockOut&id=${currentUser.id}&lat=${lat}&lng=${lng})
+    .then(r=>r.json()).then(j=>alert(j.message));
+  });
+}
 
-  function closeCamera() {
-    cameraModal.classList.add('hidden');
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(t => t.stop());
-      cameraStream = null;
-    }
-  }
+/* ================= PENGAJUAN ================= */
+function kirimPengajuan(){
+  const jenis = pjJenis.value;
+  const alasan = pjAlasan.value.trim();
+  if(!jenis || !alasan){ alert("Lengkapi pengajuan"); return; }
 
-  function capturePhoto() {
-    const canvas = cameraCanvas;
-    const ctx = canvas.getContext('2d');
+  fetch(${API_URL}?action=pengajuan&id=${currentUser.id}&nama=${currentUser.nama}&jenis=${jenis}&alasan=${encodeURIComponent(alasan)})
+  .then(r=>r.json()).then(j=>{
+    alert("Pengajuan dikirim. Mohon tunggu approval.");
+    pjJenis.value=""; pjAlasan.value="";
+  });
+}
 
-    canvas.width = cameraVideo.videoWidth;
-    canvas.height = cameraVideo.videoHeight;
-    ctx.drawImage(cameraVideo, 0, 0);
+/* ================= LOGOUT ================= */
+function logout(){
+  localStorage.clear();
+  location.reload();
+}
 
-    photoBase64 = canvas.toDataURL('image/jpeg', 0.7)
-      .replace(/^data:image\/jpeg;base64,/, '');
-
-    closeCamera();
-    submitClockIn();
-  }
-
-  // ================= SUBMIT =================
-  async function submitClockIn() {
-    const form = new FormData();
-    form.append('action', 'clock_in');
-    form.append('nik', currentUser.nik);
-    form.append('nama', currentUser.nama);
-    form.append('foto', photoBase64);
-    form.append('lokasi', 'Manual');
-
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      body: form
-    });
-
-    const json = await res.json();
-    alert(json.message || 'Selesai');
-  }
+/* ================= AUTO LOGIN ================= */
+const saved = localStorage.getItem("user");
+if(saved){
+  currentUser = JSON.parse(saved);
+  loginPage.classList.add("hidden");
+  userDashboard.classList.remove("hidden");
+  uNama.innerText=currentUser.nama;
+  uId.innerText=currentUser.id;
+  uLokasi.innerText=currentUser.lokasiKerja||"-";
+}
 </script>
 
 </body>
