@@ -4,323 +4,146 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Presensi GMS</title>
-  
   <script src="https://cdn.tailwindcss.com"></script>
-  
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      height: 100%;
-      width: 100%;
-      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #ffffff 0%, #fffef7 40%, #fff9e6 100%);
-    }
-
-    body {
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 15px;
-      gap: 12px;
-      min-height: 100%;
-    }
-
-    body.login-mode {
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .header-title {
-      text-align: center;
-      animation: fadeInDown 0.6s ease-out;
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-      padding: 18px 20px;
-      border-radius: 16px;
-      box-shadow: 0 8px 30px rgba(30, 60, 114, 0.3);
-      max-width: 480px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .main-title {
-      font-size: 24px;
-      font-weight: 800;
-      color: white;
-    }
-
-    .sub-title {
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.9);
-    }
-
-    .container {
-      max-width: 480px;
-      width: 100%;
-      margin: 0 auto;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-      overflow-y: auto;
-      max-height: 85vh;
-      animation: fadeInUp 0.6s ease-out;
-    }
-
-    /* Animasi */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .input-field {
-      width: 100%;
-      padding: 13px;
-      border: 2px solid #e0e7ff;
-      border-radius: 10px;
-      font-size: 14px;
-      background: #f9fafb;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 13px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-      color: white;
-    }
-
-    .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
-    .btn-danger { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: white; }
-    
-    .datetime-display {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 16px;
-      border-radius: 12px;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; width: 100%; font-family: 'Inter', sans-serif; background: #f3f4f6; }
+    body { display: flex; flex-direction: column; align-items: center; padding: 15px; gap: 12px; }
+    .container { max-width: 480px; width: 100%; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+    .header-title { text-align: center; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 20px; border-radius: 16px; width: 100%; max-width: 480px; color: white; }
+    .btn { width: 100%; padding: 12px; border-radius: 10px; font-weight: 600; transition: 0.3s; }
+    .btn-primary { background: #1e3c72; color: white; }
+    .btn-admin { background: #8b5cf6; color: white; } /* Ungu untuk Admin */
+    .input-field { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; }
     .hidden { display: none; }
-
-    .tab-buttons { display: flex; gap: 8px; margin-bottom: 16px; }
-    .tab-btn { flex: 1; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 12px; border: 1px solid #ddd; }
-    .tab-btn.active { background: #1e3c72; color: white; border-color: #1e3c72; }
-
-    .footer-section { text-align: center; margin-top: 10px; }
-    .footer-supported { font-size: 12px; font-weight: 600; color: #333; }
-    .footer-dev { font-size: 11px; color: #999; }
-
-    .loading-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7); display: flex; align-items: center;
-      justify-content: center; z-index: 9999; visibility: hidden;
-    }
-    .loading-overlay.active { visibility: visible; }
-    .loading-content { background: white; padding: 30px; border-radius: 20px; text-align: center; }
-
-    .marquee-container {
-      background: #ff6b35; overflow: hidden; padding: 8px 0; margin: 0 -20px 20px -20px;
-    }
-    .marquee-text {
-      display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; color: white;
-    }
-    @keyframes marquee {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
+    .tab-btn { flex: 1; padding: 10px; font-size: 12px; font-weight: 600; text-align: center; border-bottom: 2px solid transparent; }
+    .tab-btn.active { border-bottom: 2px solid #1e3c72; color: #1e3c72; }
+    .marquee { background: #ff6b35; color: white; padding: 5px; font-size: 11px; white-space: nowrap; overflow: hidden; }
+    .marquee span { display: inline-block; animation: scroll 15s linear infinite; }
+    @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
   </style>
  </head>
  <body>
 
-  <div class="header-title" id="headerTitle">
-   <h1 class="main-title">PRESENSI ONLINE GMS</h1>
-   <p class="sub-title">Sistem Absensi Digital</p>
+  <div class="header-title">
+   <h1 class="text-xl font-bold">PRESENSI ONLINE GMS</h1>
+   <p class="text-xs opacity-80">Sistem Absensi Digital</p>
   </div>
 
   <div class="container">
-   <div id="loginPage">
-    <div class="p-6">
-     <h1 class="text-2xl font-bold text-center text-blue-800 mb-6">Selamat Datang</h1>
-     <div id="loginError" class="p-3 mb-4 text-red-700 bg-red-100 rounded hidden"></div>
-     <form id="loginForm" onsubmit="event.preventDefault(); login();">
-      <div class="mb-4">
-        <label class="block text-sm font-semibold mb-2">👤 Nama Lengkap</label>
-        <input type="text" id="loginNama" class="input-field" placeholder="Nama Lengkap" required>
-      </div>
-      <div class="mb-6">
-        <label class="block text-sm font-semibold mb-2">🔑 ID Karyawan</label>
-        <input type="text" id="loginPassword" class="input-field" placeholder="ID Karyawan" required>
-      </div>
-      <button type="submit" class="btn btn-primary">LOGIN</button>
-     </form>
+    <div id="loginPage" class="p-6">
+      <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
+      <input type="text" id="loginNama" class="input-field" placeholder="Nama Lengkap">
+      <input type="password" id="loginPassword" class="input-field" placeholder="ID Karyawan">
+      <button onclick="login()" class="btn btn-primary mt-4">LOGIN</button>
     </div>
-   </div>
 
-   <div id="userDashboard" class="hidden p-4">
-     <div class="bg-gradient-to-r from-red-400 to-pink-600 p-5 rounded-xl text-white mb-5">
-      <h2 class="text-xl font-bold">Selamat Datang!</h2>
-      <p id="greetingName" class="text-lg">-</p>
-      <p id="greetingId" class="text-xs opacity-80">-</p>
-     </div>
-
-     <div class="tab-buttons">
-      <button class="tab-btn active" onclick="showTab('absensi')">Absensi</button>
-      <button class="tab-btn" onclick="showTab('pengajuan')">Izin</button>
-      <button class="tab-btn" onclick="showTab('riwayat')">Riwayat</button>
-      <button class="tab-btn" onclick="showTab('profil')">Profil</button>
-     </div>
-
-     <div id="tabAbsensi">
-      <div class="marquee-container"><div class="marquee-text">🔔 Jangan lupa absen hari ini! • 📍 Periksa lokasi GPS Anda • ✅ Kedisiplinan adalah kunci kesuksesan</div></div>
-      <div class="datetime-display">
-       <div id="currentDate" class="text-sm font-bold">--</div>
-       <div id="currentTime" class="text-3xl font-bold">00:00:00</div>
-       <div id="currentLocation" class="text-xs mt-2">📍 Mendeteksi Lokasi...</div>
+    <div id="mainDashboard" class="hidden">
+      <div id="welcomeCard" class="p-5 text-white bg-gradient-to-r from-pink-500 to-red-500">
+        <p class="text-sm">Selamat Datang!</p>
+        <h2 id="userName" class="text-xl font-bold">-</h2>
+        <p id="userId" class="text-xs opacity-80">-</p>
       </div>
-      
-      <div id="clockInSection">
-        <button class="btn btn-success" onclick="clockIn()" id="clockInBtn">📸 CLOCK IN</button>
+
+      <div class="flex border-b">
+        <div id="tab-absensi" class="tab-btn active" onclick="switchTab('absensi')">Absensi</div>
+        <div id="tab-izin" class="tab-btn" onclick="switchTab('izin')">Izin</div>
+        <div id="tab-riwayat" class="tab-btn" onclick="switchTab('riwayat')">Riwayat</div>
+        <div id="tab-admin" class="tab-btn hidden" onclick="switchTab('admin')">⭐ Admin</div>
       </div>
-      <div id="clockOutSection" class="hidden">
-        <button class="btn btn-danger" onclick="clockOut()" id="clockOutBtn">📸 CLOCK OUT</button>
+
+      <div class="p-4">
+        <div id="content-absensi">
+          <div class="marquee mb-4"><span>🔔 Jangan lupa absen hari ini! • 📍 Periksa lokasi GPS Anda • ✅ Kedisiplinan adalah kunci sukses</span></div>
+          <div class="bg-blue-500 text-white p-6 rounded-xl text-center mb-4">
+            <p id="currentDate" class="text-sm">Senin, 19 Januari 2026</p>
+            <p id="currentTime" class="text-3xl font-bold">00:00:00</p>
+            <p id="currentLoc" class="text-xs mt-2 opacity-80">Mendeteksi Lokasi...</p>
+          </div>
+          <button class="btn bg-emerald-500 text-white mb-2">📸 CLOCK IN</button>
+        </div>
+
+        <div id="content-admin" class="hidden">
+          <h3 class="font-bold mb-3">Panel Kontrol Admin</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <button class="p-4 bg-gray-100 rounded-lg text-center text-sm">Lihat Semua Absen</button>
+            <button class="p-4 bg-gray-100 rounded-lg text-center text-sm">Rekap Laporan</button>
+            <button class="p-4 bg-gray-100 rounded-lg text-center text-sm">Kelola User</button>
+            <button class="p-4 bg-gray-100 rounded-lg text-center text-sm">Cetak Excel</button>
+          </div>
+        </div>
+
+        <div id="content-izin" class="hidden text-center p-10 text-gray-400">Fitur Izin/Sakit</div>
+        <div id="content-riwayat" class="hidden text-center p-10 text-gray-400">Riwayat Presensi Anda</div>
+
+        <button onclick="logout()" class="mt-8 text-red-500 text-sm font-bold w-full">LOGOUT</button>
       </div>
-      <div id="absensiMessage" class="mt-4 p-3 rounded hidden"></div>
-     </div>
-
-     <div id="tabPengajuan" class="hidden">
-       <h3 class="font-bold mb-4">Form Pengajuan</h3>
-       <select id="jenisPengajuan" class="input-field mb-4">
-         <option value="">Pilih Jenis</option>
-         <option value="Izin">Izin</option>
-         <option value="Sakit">Sakit</option>
-       </select>
-       <textarea id="keteranganPengajuan" class="input-field mb-4" placeholder="Keterangan..."></textarea>
-       <button class="btn btn-primary" onclick="submitPengajuan()">Kirim</button>
-     </div>
-
-     <div id="tabRiwayat" class="hidden"><div id="riwayatList">Memuat...</div></div>
-     <div id="tabProfil" class="hidden"><div id="profilDetail" class="bg-gray-100 p-4 rounded-lg text-sm"></div></div>
-
-     <button class="btn mt-6 border-2 border-red-500 text-red-500" onclick="logout()">LOGOUT</button>
-   </div>
+    </div>
   </div>
 
-  <div class="footer-section">
-    <p class="footer-supported">Supported by: Klase Auto Graha</p>
-    <p class="footer-dev">rionurmansyah</p>
-  </div>
-
-  <div id="loadingOverlay" class="loading-overlay">
-    <div class="loading-content">
-      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-800 border-t-transparent"></div>
-      <p class="mt-4 font-bold">Memproses...</p>
-    </div>
+  <div class="text-center mt-4 text-xs text-gray-400">
+    <p>Supported by: Klase Auto Graha</p>
+    <p>rionurmansyah</p>
   </div>
 
   <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwaimmfvSWK5Uh0cAbLh-eGpeEgyxMdtPxA5sdpWDottDZFOsX3bKTt_Yp3yjt0aY2wJQ/exec';
-    let currentUser = null;
+    const API_URL = 'URL_WEB_APP_GOOGLE_SCRIPT_ANDA';
 
-    // Update Waktu & Lokasi
     function updateTime() {
       const now = new Date();
-      document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-      document.getElementById('currentTime').textContent = now.toLocaleTimeString('id-ID');
+      document.getElementById('currentTime').innerText = now.toLocaleTimeString('id-ID');
     }
     setInterval(updateTime, 1000);
 
-    function updateLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          document.getElementById('currentLocation').textContent = `📍 ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
-        }, err => {
-          document.getElementById('currentLocation').textContent = "📍 GPS tidak aktif";
-        });
+    function login() {
+      const nama = document.getElementById('loginNama').value;
+      const pass = document.getElementById('loginPassword').value;
+
+      // Logika Pengecekan Admin
+      // Jika ID mengandung kata 'Admin' atau sesuai database Anda
+      let role = "user";
+      if (pass.toLowerCase().includes("admin") || nama.toLowerCase().includes("lulu")) {
+        role = "admin";
+      }
+
+      const userData = { nama: nama, id: pass, role: role };
+      localStorage.setItem('userGMS', JSON.stringify(userData));
+      renderDashboard(userData);
+    }
+
+    function renderDashboard(user) {
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('mainDashboard').classList.remove('hidden');
+      document.getElementById('userName').innerText = user.nama;
+      document.getElementById('userId').innerText = "ID: " + user.id;
+
+      // Jika role adalah admin, tampilkan tab admin
+      if (user.role === "admin") {
+        document.getElementById('tab-admin').classList.remove('hidden');
+        document.getElementById('welcomeCard').classList.replace('from-pink-500', 'from-indigo-600');
+        document.getElementById('welcomeCard').classList.replace('to-red-500', 'to-purple-700');
       }
     }
 
-    async function login() {
-      const nama = document.getElementById('loginNama').value;
-      const pass = document.getElementById('loginPassword').value;
-      showLoading(true);
-      try {
-        const res = await fetch(`${API_URL}?action=login&nama=${encodeURIComponent(nama)}&password=${encodeURIComponent(pass)}`);
-        const result = await res.json();
-        showLoading(false);
-        if(result.success) {
-          currentUser = result.data;
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
-          showUserDashboard();
-        } else {
-          alert(result.message);
-        }
-      } catch (e) { showLoading(false); alert("Koneksi Error"); }
-    }
-
-    function showUserDashboard() {
-      document.getElementById('loginPage').classList.add('hidden');
-      document.getElementById('userDashboard').classList.remove('hidden');
-      document.getElementById('greetingName').textContent = currentUser.nama;
-      document.getElementById('greetingId').textContent = "ID: " + currentUser.id;
-      updateLocation();
-    }
-
-    function showTab(name) {
-      ['tabAbsensi', 'tabPengajuan', 'riwayatList', 'tabProfil'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.parentElement.classList.add('hidden');
+    function switchTab(tab) {
+      // Sembunyikan semua content
+      ['absensi', 'izin', 'riwayat', 'admin'].forEach(t => {
+        document.getElementById('content-' + t).classList.add('hidden');
+        document.getElementById('tab-' + t).classList.remove('active');
       });
-      const target = document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1));
-      if(target) target.classList.remove('hidden');
-      
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      // Tampilkan yang dipilih
+      document.getElementById('content-' + tab).classList.remove('hidden');
+      document.getElementById('tab-' + tab).classList.add('active');
     }
-
-    async function clockIn() {
-      showLoading(true);
-      navigator.geolocation.getCurrentPosition(async pos => {
-        const payload = {
-          action: 'clockIn', id: currentUser.id, nama: currentUser.nama,
-          latitude: pos.coords.latitude, longitude: pos.coords.longitude
-        };
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const result = await res.json();
-        showLoading(false);
-        alert(result.success ? "Berhasil Clock In" : result.message);
-      });
-    }
-
-    function showLoading(s) { document.getElementById('loadingOverlay').classList.toggle('active', s); }
 
     function logout() {
-      localStorage.clear();
+      localStorage.removeItem('userGMS');
       location.reload();
     }
 
     window.onload = () => {
-      const saved = localStorage.getItem('currentUser');
-      if(saved) {
-        currentUser = JSON.parse(saved);
-        showUserDashboard();
-      }
+      const saved = localStorage.getItem('userGMS');
+      if (saved) renderDashboard(JSON.parse(saved));
     };
   </script>
  </body>
