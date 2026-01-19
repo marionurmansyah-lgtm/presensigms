@@ -64,6 +64,10 @@ button{
   font-size:13px;
   margin-bottom:10px;
 }
+  button {
+  position: relative;
+  z-index: 10;
+}
 </style>
 </head>
 
@@ -121,7 +125,9 @@ button{
     Kirim Pengajuan
   </button>
 
-  <button class="btn-danger" onclick="logout()">Logout</button>
+  <button class="btn-danger" onclick="logout()">
+  <i class="fa-solid fa-right-from-bracket"></i> Logout
+</button>
 </div>
 
 <script>
@@ -211,3 +217,4 @@ if(saved){
 
 </body>
 </html>
+
