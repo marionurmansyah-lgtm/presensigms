@@ -1,14 +1,13 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="id">
  <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Presensi GMS</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
   <style>
-    body {
-      box-sizing: border-box;
-    }
-    
     * {
       margin: 0;
       padding: 0;
@@ -18,11 +17,11 @@
     html, body {
       height: 100%;
       width: 100%;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffffff 0%, #fffef7 40%, #fff9e6 100%);
     }
 
     body {
-      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #ffffff 0%, #fffef7 40%, #fff9e6 100%);
       overflow: auto;
       display: flex;
       flex-direction: column;
@@ -36,7 +35,6 @@
     body.login-mode {
       justify-content: center;
       padding: 20px;
-      gap: 20px;
     }
 
     .header-title {
@@ -54,40 +52,12 @@
     .main-title {
       font-size: 24px;
       font-weight: 800;
-      margin: 0;
-      letter-spacing: 0.5px;
       color: white;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
     .sub-title {
       font-size: 13px;
-      font-weight: 500;
-      margin: 6px 0 0 0;
       color: rgba(255, 255, 255, 0.9);
-      letter-spacing: 0.3px;
-    }
-
-    .footer-section {
-      text-align: center;
-      color: #666;
-      animation: fadeInUp 0.6s ease-out;
-      margin-top: 10px;
-    }
-
-    .footer-supported {
-      font-size: 12px;
-      font-weight: 600;
-      margin: 0 0 3px 0;
-      letter-spacing: 0.3px;
-      color: #333;
-    }
-
-    .footer-dev {
-      font-size: 11px;
-      font-weight: 400;
-      margin: 0;
-      color: #999;
     }
 
     .container {
@@ -96,112 +66,20 @@
       margin: 0 auto;
       background: white;
       border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 100px rgba(255,255,255,0.1);
-      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
       overflow-y: auto;
       max-height: 85vh;
       animation: fadeInUp 0.6s ease-out;
-      backdrop-filter: blur(10px);
     }
-    
-    .container::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    .container::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-    
-    .container::-webkit-scrollbar-thumb {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 10px;
-    }
-    
-    .container::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    }
-    
+
+    /* Animasi */
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .header {
-      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #c44569 100%);
-      color: white;
-      padding: 20px 18px;
-      text-align: center;
-    }
-
-    .header h1 {
-      font-size: 22px;
-      margin-bottom: 3px;
-    }
-
-    .header p {
-      font-size: 13px;
-      opacity: 0.9;
-    }
-
-    .content {
-      padding: 25px 20px;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #333;
-      font-size: 13px;
-    }
-
-    .welcome-text {
-      text-align: center;
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-size: 26px;
-      font-weight: 800;
-      margin-bottom: 25px;
-      margin-top: 0px;
-      letter-spacing: -0.5px;
-    }
-
-    .input-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #333;
-      font-size: 14px;
-    }
-
-    .input-icon {
-      font-size: 18px;
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .input-field {
@@ -210,2236 +88,240 @@
       border: 2px solid #e0e7ff;
       border-radius: 10px;
       font-size: 14px;
-      transition: all 0.3s ease;
-      font-family: inherit;
       background: #f9fafb;
-      font-weight: 500;
-    }
-
-    .input-field:focus {
-      outline: none;
-      border-color: #2a5298;
-      box-shadow: 0 0 0 4px rgba(42, 82, 152, 0.1);
-      background: white;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 11px 13px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 13px;
-      transition: all 0.3s;
-      font-family: inherit;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 70px;
     }
 
     .btn {
       width: 100%;
       padding: 13px;
-      border: none;
       border-radius: 10px;
-      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
-      margin-top: 8px;
-    }
-
-    .btn-login {
-      max-width: 200px;
-      margin-left: auto;
-      margin-right: auto;
-      display: block;
-      padding: 11px 20px;
-      font-size: 14px;
-    }
-
-    .btn-logout {
-      max-width: 200px;
-      margin: 20px auto 0 auto;
-      display: block;
-      padding: 11px 20px;
-      font-size: 14px;
-      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-      color: white;
-      box-shadow: 0 4px 15px rgba(235, 51, 73, 0.3);
-    }
-
-    .btn-logout:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(235, 51, 73, 0.5);
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
       color: white;
-      box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
-      letter-spacing: 0.5px;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(30, 60, 114, 0.5);
-      background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
-    }
-
-    .btn-success {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      color: white;
-    }
-
-    .btn-success:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-      color: white;
-    }
-
-    .btn-danger:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(235, 51, 73, 0.3);
-    }
-
-    .btn-secondary {
-      background: #6c757d;
-      color: white;
-    }
-
-    .btn-secondary:hover {
-      background: #5a6268;
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none !important;
-    }
-
-    .info-box {
-      background: #f8f9fa;
-      border-left: 4px solid #667eea;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-
-    .info-box h3 {
-      font-size: 16px;
-      color: #667eea;
-      margin-bottom: 10px;
-    }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .info-row:last-child {
-      border-bottom: none;
-    }
-
-    .info-label {
-      color: #666;
-      font-size: 14px;
-    }
-
-    .info-value {
-      color: #333;
-      font-weight: 600;
-      font-size: 14px;
-    }
-
+    .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+    .btn-danger { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: white; }
+    
     .datetime-display {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 75%, #4facfe 100%);
-      color: white;
-      padding: 16px;
-      border-radius: 12px;
-      text-align: center;
-      margin-bottom: 16px;
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-    }
-
-    .datetime-display .date {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .datetime-display .time {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-    }
-
-    .datetime-display .location {
-      font-size: 13px;
-      opacity: 0.9;
-      margin-top: 8px;
-    }
-
-    .alert {
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      font-size: 14px;
-    }
-
-    .alert-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .alert-error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-
-    .alert-warning {
-      background: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeaa7;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .tab-buttons {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 10px;
-      border: 2px solid transparent;
-      background: white;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 13px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .tab-btn:nth-child(1) {
-      color: #667eea;
-      border-color: #667eea;
-    }
-
-    .tab-btn:nth-child(1).active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-color: transparent;
-    }
-
-    .tab-btn:nth-child(2) {
-      color: #11998e;
-      border-color: #11998e;
-    }
-
-    .tab-btn:nth-child(2).active {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      color: white;
-      border-color: transparent;
-    }
-
-    .tab-btn:nth-child(3) {
-      color: #eb3349;
-      border-color: #eb3349;
-    }
-
-    .tab-btn:nth-child(3).active {
-      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-      color: white;
-      border-color: transparent;
-    }
-
-    .tab-btn:nth-child(4) {
-      color: #f093fb;
-      border-color: #f093fb;
-    }
-
-    .tab-btn:nth-child(4).active {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      color: white;
-      border-color: transparent;
-    }
-
-    .riwayat-item {
-      background: #f8f9fa;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      border-left: 4px solid #667eea;
-    }
-
-    .riwayat-item .date {
-      font-weight: 600;
-      color: #667eea;
-      margin-bottom: 8px;
-    }
-
-    .riwayat-item .time-info {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      color: #666;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .stat-card {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       padding: 16px;
       border-radius: 12px;
       text-align: center;
+      margin-bottom: 16px;
     }
 
-    .stat-card.green {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    }
+    .hidden { display: none; }
 
-    .stat-card.red {
-      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-    }
+    .tab-buttons { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tab-btn { flex: 1; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 12px; border: 1px solid #ddd; }
+    .tab-btn.active { background: #1e3c72; color: white; border-color: #1e3c72; }
 
-    .stat-card.orange {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
-
-    .stat-card .number {
-      font-size: 30px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .stat-card .label {
-      font-size: 11px;
-      opacity: 0.9;
-    }
-
-    .table-container {
-      overflow-x: auto;
-      margin-top: 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    th {
-      background: #667eea;
-      color: white;
-      padding: 12px 8px;
-      text-align: left;
-      font-weight: 600;
-    }
-
-    td {
-      padding: 12px 8px;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    tr:hover {
-      background: #f8f9fa;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .badge-pending {
-      background: #ffeaa7;
-      color: #856404;
-    }
-
-    .badge-approved {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .badge-rejected {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .btn-small {
-      padding: 6px 12px;
-      font-size: 12px;
-      border-radius: 5px;
-      margin: 2px;
-    }
-
-    .photo-preview {
-      width: 100%;
-      max-height: 300px;
-      object-fit: contain;
-      border-radius: 10px;
-      margin-top: 10px;
-      border: 2px solid #e0e0e0;
-    }
-
-    .file-input-wrapper {
-      position: relative;
-      overflow: hidden;
-      display: inline-block;
-      width: 100%;
-    }
-
-    .file-input-wrapper input[type=file] {
-      position: absolute;
-      left: -9999px;
-    }
-
-    .file-input-label {
-      display: block;
-      padding: 12px 15px;
-      background: #f8f9fa;
-      border: 2px dashed #667eea;
-      border-radius: 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      color: #667eea;
-      font-weight: 600;
-    }
-
-    .file-input-label:hover {
-      background: #667eea;
-      color: white;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #667eea;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      max-width: 500px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-header {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    .logout-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border: 2px solid white;
-      padding: 8px 15px;
-      border-radius: 20px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .logout-btn:hover {
-      background: white;
-      color: #667eea;
-    }
-
-    .password-wrapper {
-      position: relative;
-    }
-
-    .password-toggle {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 20px;
-      color: #666;
-      padding: 0;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .password-toggle:hover {
-      color: #667eea;
-    }
-
-    .login-illustration {
-      text-align: center;
-      padding: 60px 20px;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-      margin: -30px -20px 30px -20px;
-    }
-
-    .login-illustration .icon {
-      font-size: 80px;
-      margin-bottom: 20px;
-      animation: float 3s ease-in-out infinite;
-      display: inline-block;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-15px); }
-    }
-
-    .login-illustration h2 {
-      font-size: 26px;
-      color: #333;
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-
-    .login-illustration p {
-      font-size: 15px;
-      color: #666;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 3px solid rgba(255,255,255,.3);
-      border-radius: 50%;
-      border-top-color: #fff;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    .footer-section { text-align: center; margin-top: 10px; }
+    .footer-supported { font-size: 12px; font-weight: 600; color: #333; }
+    .footer-dev { font-size: 11px; color: #999; }
 
     .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s;
-      backdrop-filter: blur(5px);
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7); display: flex; align-items: center;
+      justify-content: center; z-index: 9999; visibility: hidden;
     }
-
-    .loading-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .loading-content {
-      background: white;
-      padding: 40px 50px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-      animation: scaleIn 0.3s ease-out;
-    }
-
-    @keyframes scaleIn {
-      from {
-        transform: scale(0.8);
-        opacity: 0;
-      }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .loading-spinner {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 25px;
-      position: relative;
-    }
-
-    .loading-spinner::before,
-    .loading-spinner::after {
-      content: '';
-      position: absolute;
-      border-radius: 50%;
-    }
-
-    .loading-spinner::before {
-      width: 60px;
-      height: 60px;
-      border: 4px solid #e0e7ff;
-      border-top-color: #667eea;
-      animation: spinFast 0.8s linear infinite;
-    }
-
-    .loading-spinner::after {
-      width: 44px;
-      height: 44px;
-      top: 8px;
-      left: 8px;
-      border: 4px solid transparent;
-      border-bottom-color: #764ba2;
-      animation: spinSlow 1.2s linear infinite reverse;
-    }
-
-    @keyframes spinFast {
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes spinSlow {
-      to { transform: rotate(360deg); }
-    }
-
-    .loading-text {
-      font-size: 16px;
-      color: #333;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .loading-dots {
-      display: inline-block;
-      margin-left: 2px;
-    }
-
-    .loading-dots span {
-      animation: blink 1.4s infinite;
-      font-weight: 700;
-    }
-
-    .loading-dots span:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .loading-dots span:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-
-    @keyframes blink {
-      0%, 60%, 100% { opacity: 1; }
-      30% { opacity: 0.3; }
-    }
-
-    @keyframes pulse {
-      0%, 100% { 
-        transform: scale(1);
-        opacity: 1;
-      }
-      50% { 
-        transform: scale(1.1);
-        opacity: 0.8;
-      }
-    }
+    .loading-overlay.active { visibility: visible; }
+    .loading-content { background: white; padding: 30px; border-radius: 20px; text-align: center; }
 
     .marquee-container {
-      background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 50%, #ff5722 75%, #ff8a50 100%);
-      overflow: hidden;
-      padding: 12px 0;
-      margin: -25px -20px 20px -20px;
-      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+      background: #ff6b35; overflow: hidden; padding: 8px 0; margin: 0 -20px 20px -20px;
     }
-
     .marquee-text {
-      display: inline-block;
-      white-space: nowrap;
-      animation: marquee 15s linear infinite;
-      color: white;
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; color: white;
     }
-
     @keyframes marquee {
-      0% {
-        transform: translateX(100%);
-      }
-      100% {
-        transform: translateX(-100%);
-      }
-    }
-
-    @media (max-width: 480px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .datetime-display .time {
-        font-size: 24px;
-      }
-      
-      .login-illustration .icon {
-        font-size: 60px;
-      }
-      
-      .main-title {
-        font-size: 22px;
-      }
-      
-      .sub-title {
-        font-size: 12px;
-      }
-      
-      .header-title {
-        padding: 15px 18px;
-      }
-      
-      .footer-supported {
-        font-size: 13px;
-      }
-      
-      .footer-dev {
-        font-size: 12px;
-      }
-      
-      .marquee-text {
-        font-size: 14px;
-      }
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
     }
   </style>
-  <style>@view-transition { navigation: auto; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
-  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
-  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
  </head>
- <body><!-- HEADER TITLE -->
+ <body>
+
   <div class="header-title" id="headerTitle">
    <h1 class="main-title">PRESENSI ONLINE GMS</h1>
    <p class="sub-title">Sistem Absensi Digital</p>
   </div>
-  <div class="container"><!-- LOGIN PAGE -->
+
+  <div class="container">
    <div id="loginPage">
-    <div class="content">
-     <h1 class="welcome-text">Selamat Datang</h1>
-     <div id="loginError" class="alert alert-error hidden"></div>
+    <div class="p-6">
+     <h1 class="text-2xl font-bold text-center text-blue-800 mb-6">Selamat Datang</h1>
+     <div id="loginError" class="p-3 mb-4 text-red-700 bg-red-100 rounded hidden"></div>
      <form id="loginForm" onsubmit="event.preventDefault(); login();">
-      <div class="form-group"><label for="loginNama" class="input-label"> <span class="input-icon">👤</span> Nama Lengkap </label> <input type="text" id="loginNama" class="input-field" placeholder="Masukkan Nama Lengkap" required>
+      <div class="mb-4">
+        <label class="block text-sm font-semibold mb-2">👤 Nama Lengkap</label>
+        <input type="text" id="loginNama" class="input-field" placeholder="Nama Lengkap" required>
       </div>
-      <div class="form-group"><label for="loginPassword" class="input-label"> <span class="input-icon">🔑</span> ID Karyawan </label> <input type="text" id="loginPassword" class="input-field" placeholder="Masukkan ID Karyawan" required>
-      </div><button type="submit" class="btn btn-primary btn-login" id="loginBtn"> <span>LOGIN</span> </button>
+      <div class="mb-6">
+        <label class="block text-sm font-semibold mb-2">🔑 ID Karyawan</label>
+        <input type="text" id="loginPassword" class="input-field" placeholder="ID Karyawan" required>
+      </div>
+      <button type="submit" class="btn btn-primary">LOGIN</button>
      </form>
     </div>
-   </div><!-- USER DASHBOARD -->
-   <div id="userDashboard" class="hidden">
-    <div class="content"><!-- GREETING CARD -->
-     <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #c44569 100%); padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);">
-      <h2 style="color: white; font-size: 22px; font-weight: 700; margin: 0 0 8px 0;">Selamat Datang!</h2>
-      <p style="color: rgba(255,255,255,0.95); font-size: 16px; margin: 0; font-weight: 500;" id="greetingName">-</p>
-      <p style="color: rgba(255,255,255,0.9); font-size: 13px; margin: 5px 0 0 0; font-weight: 400;" id="greetingId">ID: -</p>
-      <p style="color: rgba(255,255,255,0.9); font-size: 13px; margin: 3px 0 0 0; font-weight: 400;" id="greetingLokasi">📍 Lokasi Kerja: -</p>
+   </div>
+
+   <div id="userDashboard" class="hidden p-4">
+     <div class="bg-gradient-to-r from-red-400 to-pink-600 p-5 rounded-xl text-white mb-5">
+      <h2 class="text-xl font-bold">Selamat Datang!</h2>
+      <p id="greetingName" class="text-lg">-</p>
+      <p id="greetingId" class="text-xs opacity-80">-</p>
      </div>
-     <div class="tab-buttons"><button class="tab-btn active" onclick="showTab('absensi')">Absensi</button> <button class="tab-btn" onclick="showTab('pengajuan')">Pengajuan</button> <button class="tab-btn" onclick="showTab('riwayat')">Riwayat</button> <button class="tab-btn" onclick="showTab('profil')">Profil</button>
-     </div><!-- TAB ABSENSI -->
+
+     <div class="tab-buttons">
+      <button class="tab-btn active" onclick="showTab('absensi')">Absensi</button>
+      <button class="tab-btn" onclick="showTab('pengajuan')">Izin</button>
+      <button class="tab-btn" onclick="showTab('riwayat')">Riwayat</button>
+      <button class="tab-btn" onclick="showTab('profil')">Profil</button>
+     </div>
+
      <div id="tabAbsensi">
-      <div class="marquee-container">
-       <div class="marquee-text">
-        🔔 Jangan lupa absen hari ini! • ⏰ Pastikan clock in tepat waktu • 📍 Periksa lokasi GPS Anda • ✅ Absensi lengkap, kerja nyaman • 💼 Kedisiplinan adalah kunci kesuksesan •
-       </div>
-      </div>
+      <div class="marquee-container"><div class="marquee-text">🔔 Jangan lupa absen hari ini! • 📍 Periksa lokasi GPS Anda • ✅ Kedisiplinan adalah kunci kesuksesan</div></div>
       <div class="datetime-display">
-       <div class="date" id="currentDate">
-        -
-       </div>
-       <div class="time" id="currentTime">
-        --:--:--
-       </div>
-       <div class="location" id="currentLocation">
-        📍 -
-       </div>
+       <div id="currentDate" class="text-sm font-bold">--</div>
+       <div id="currentTime" class="text-3xl font-bold">00:00:00</div>
+       <div id="currentLocation" class="text-xs mt-2">📍 Mendeteksi Lokasi...</div>
       </div>
-      <div id="clockInSection"><button class="btn btn-success" onclick="clockIn()" id="clockInBtn"> 📸 CLOCK IN </button>
+      
+      <div id="clockInSection">
+        <button class="btn btn-success" onclick="clockIn()" id="clockInBtn">📸 CLOCK IN</button>
       </div>
       <div id="clockOutSection" class="hidden">
-       <div class="alert alert-success">
-        ✅ Anda sudah clock in hari ini
-       </div><button class="btn btn-danger" onclick="clockOut()" id="clockOutBtn"> 📸 CLOCK OUT </button>
+        <button class="btn btn-danger" onclick="clockOut()" id="clockOutBtn">📸 CLOCK OUT</button>
       </div>
-      <div id="pendingSubmissionSection" class="hidden">
-       <div style="background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); padding: 30px 20px; border-radius: 15px; text-align: center; box-shadow: 0 8px 20px rgba(253, 203, 110, 0.4);">
-        <div style="font-size: 60px; margin-bottom: 15px; animation: pulse 2s ease-in-out infinite;">
-         ⏳
-        </div>
-        <h3 style="color: #2d3436; font-size: 20px; font-weight: 700; margin: 0 0 10px 0;">Menunggu Persetujuan</h3>
-        <p style="color: #636e72; font-size: 14px; margin: 0 0 20px 0; line-height: 1.6;">Pengajuan Anda sedang dalam proses review oleh admin. Anda tidak dapat melakukan clock in saat ini.</p>
-        <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-         <p style="color: #2d3436; font-size: 13px; margin: 0; font-weight: 600;">💡 Tip: Setelah pengajuan disetujui, Anda akan dapat melakukan absensi seperti biasa.</p>
-        </div><button class="btn btn-primary" onclick="checkTodayClockIn()" style="max-width: 200px; margin: 0 auto; display: block;"> 🔄 Periksa Status </button>
-       </div>
-      </div>
-      <div id="absensiMessage" class="hidden"></div>
-     </div><!-- TAB PENGAJUAN -->
+      <div id="absensiMessage" class="mt-4 p-3 rounded hidden"></div>
+     </div>
+
      <div id="tabPengajuan" class="hidden">
-      <h3 style="margin-bottom: 20px; color: #667eea;">�� Form Pengajuan</h3>
-      <div class="form-group"><label for="jenisPengajuan">Jenis Pengajuan</label> <select id="jenisPengajuan"> <option value="">-- Pilih Jenis --</option> <option value="Izin">Izin</option> <option value="Sakit">Sakit</option> <option value="Cuti">Cuti</option> </select>
-      </div>
-      <div class="form-group"><label for="keteranganPengajuan">Keterangan</label> <textarea id="keteranganPengajuan" placeholder="Jelaskan alasan pengajuan Anda..."></textarea>
-      </div>
-      <div class="form-group"><label>Upload Foto (Surat Keterangan)</label>
-       <div class="file-input-wrapper"><input type="file" id="fotoPengajuan" accept="image/*" onchange="previewPengajuanFoto(this)"> <label for="fotoPengajuan" class="file-input-label"> 📷 Pilih Foto </label>
-       </div><img id="previewPengajuan" class="photo-preview hidden">
-      </div><button class="btn btn-primary" onclick="submitPengajuan()" id="submitPengajuanBtn"> 📤 KIRIM PENGAJUAN </button>
-      <div id="pengajuanMessage" class="hidden"></div>
-     </div><!-- TAB RIWAYAT -->
-     <div id="tabRiwayat" class="hidden">
-      <h3 style="margin-bottom: 20px; color: #667eea;">📅 Riwayat Absensi</h3>
-      <div id="riwayatList">
-       <div class="loading">
-        Memuat data...
-       </div>
-      </div>
-     </div><!-- TAB PROFIL -->
-     <div id="tabProfil" class="hidden">
-      <h3 style="margin-bottom: 20px; color: #667eea;">👤 Profil Saya</h3>
-      <div class="info-box">
-       <div class="info-row"><span class="info-label">ID Karyawan</span> <span class="info-value" id="profilId">-</span>
-       </div>
-       <div class="info-row"><span class="info-label">Nama</span> <span class="info-value" id="profilNama">-</span>
-       </div>
-       <div class="info-row"><span class="info-label">Email</span> <span class="info-value" id="profilEmail">-</span>
-       </div>
-       <div class="info-row"><span class="info-label">No. Telpon</span> <span class="info-value" id="profilTelpon">-</span>
-       </div>
-       <div class="info-row"><span class="info-label">Lokasi Kerja</span> <span class="info-value" id="profilLokasi">-</span>
-       </div>
-       <div class="info-row"><span class="info-label">Jabatan</span> <span class="info-value" id="profilJabatan">-</span>
-       </div>
-       <div class="info-row"><span class="info-label">Mode Absensi</span> <span class="info-value" id="profilMode">-</span>
-       </div>
-       <div class="info-row"><span class="info-label">Status</span> <span class="info-value" id="profilStatus">-</span>
-       </div>
-      </div>
-     </div><!-- LOGOUT BUTTON --> <button class="btn btn-logout" onclick="logout()">LOGOUT</button>
-    </div>
-   </div><!-- ADMIN DASHBOARD -->
-   <div class="dashboard-wrapper hidden" id="adminDashboard">
-    <div class="dashboard-container">
-     <div class="header">
-      <h1>ADMIN DASHBOARD</h1>
-      <p>Kelola Sistem Presensi</p><button class="logout-btn" onclick="logout()">Logout</button>
+       <h3 class="font-bold mb-4">Form Pengajuan</h3>
+       <select id="jenisPengajuan" class="input-field mb-4">
+         <option value="">Pilih Jenis</option>
+         <option value="Izin">Izin</option>
+         <option value="Sakit">Sakit</option>
+       </select>
+       <textarea id="keteranganPengajuan" class="input-field mb-4" placeholder="Keterangan..."></textarea>
+       <button class="btn btn-primary" onclick="submitPengajuan()">Kirim</button>
      </div>
-     <div class="content">
-      <div class="tab-buttons"><button class="tab-btn active" onclick="showAdminTab('stats')">Statistik</button> <button class="tab-btn" onclick="showAdminTab('users')">Kelola User</button> <button class="tab-btn" onclick="showAdminTab('attendance')">Absensi</button> <button class="tab-btn" onclick="showAdminTab('submissions')">Pengajuan</button>
-      </div><!-- ADMIN TAB STATS -->
-      <div id="adminTabStats">
-       <h3 style="margin-bottom: 20px; color: #667eea;">📊 Statistik Hari Ini</h3>
-       <div class="stats-grid">
-        <div class="stat-card">
-         <div class="number" id="statTotal">
-          0
-         </div>
-         <div class="label">
-          Total Karyawan
-         </div>
-        </div>
-        <div class="stat-card green">
-         <div class="number" id="statHadir">
-          0
-         </div>
-         <div class="label">
-          Hadir Hari Ini
-         </div>
-        </div>
-        <div class="stat-card red">
-         <div class="number" id="statTerlambat">
-          0
-         </div>
-         <div class="label">
-          Terlambat
-         </div>
-        </div>
-        <div class="stat-card orange">
-         <div class="number" id="statPending">
-          0
-         </div>
-         <div class="label">
-          Pengajuan Pending
-         </div>
-        </div>
-       </div>
-      </div><!-- ADMIN TAB USERS -->
-      <div id="adminTabUsers" class="hidden">
-       <h3 style="margin-bottom: 20px; color: #667eea;">��� Kelola Karyawan</h3><button class="btn btn-primary" onclick="showAddUserModal()">➕ Tambah Karyawan</button>
-       <div class="table-container">
-        <table id="usersTable">
-         <thead>
-          <tr>
-           <th>ID</th>
-           <th>Nama</th>
-           <th>Lokasi</th>
-           <th>Status</th>
-           <th>Aksi</th>
-          </tr>
-         </thead>
-         <tbody id="usersTableBody">
-          <tr>
-           <td colspan="5" class="loading">Memuat data...</td>
-          </tr>
-         </tbody>
-        </table>
-       </div>
-      </div><!-- ADMIN TAB ATTENDANCE -->
-      <div id="adminTabAttendance" class="hidden">
-       <h3 style="margin-bottom: 20px; color: #667eea;">📋 Data Absensi</h3>
-       <div class="table-container">
-        <table id="attendanceTable">
-         <thead>
-          <tr>
-           <th>Tanggal</th>
-           <th>Nama</th>
-           <th>Lokasi</th>
-           <th>Clock In</th>
-           <th>Clock Out</th>
-           <th>Durasi</th>
-          </tr>
-         </thead>
-         <tbody id="attendanceTableBody">
-          <tr>
-           <td colspan="6" class="loading">Memuat data...</td>
-          </tr>
-         </tbody>
-        </table>
-       </div>
-      </div><!-- ADMIN TAB SUBMISSIONS -->
-      <div id="adminTabSubmissions" class="hidden">
-       <h3 style="margin-bottom: 20px; color: #667eea;">📝 Kelola Pengajuan</h3>
-       <div class="table-container">
-        <table id="submissionsTable">
-         <thead>
-          <tr>
-           <th>Tanggal</th>
-           <th>Nama</th>
-           <th>Jenis</th>
-           <th>Keterangan</th>
-           <th>Foto</th>
-           <th>Status</th>
-           <th>Aksi</th>
-          </tr>
-         </thead>
-         <tbody id="submissionsTableBody">
-          <tr>
-           <td colspan="7" class="loading">Memuat data...</td>
-          </tr>
-         </tbody>
-        </table>
-       </div>
-      </div>
-     </div>
-    </div>
+
+     <div id="tabRiwayat" class="hidden"><div id="riwayatList">Memuat...</div></div>
+     <div id="tabProfil" class="hidden"><div id="profilDetail" class="bg-gray-100 p-4 rounded-lg text-sm"></div></div>
+
+     <button class="btn mt-6 border-2 border-red-500 text-red-500" onclick="logout()">LOGOUT</button>
    </div>
-   <div class="footer-section">
+  </div>
+
+  <div class="footer-section">
     <p class="footer-supported">Supported by: Klase Auto Graha</p>
     <p class="footer-dev">rionurmansyah</p>
-   </div><!-- LOADING OVERLAY -->
-   <div id="loadingOverlay" class="loading-overlay">
+  </div>
+
+  <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-content">
-     <div class="loading-spinner"></div>
-     <div class="loading-text" id="loadingText">
-      Memproses<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
-     </div>
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-800 border-t-transparent"></div>
+      <p class="mt-4 font-bold">Memproses...</p>
     </div>
-   </div><!-- MODAL ADD/EDIT USER -->
-   <div id="userModal" class="modal">
-    <div class="modal-content">
-     <div class="modal-header" id="userModalTitle">
-      Tambah Karyawan
-     </div>
-     <div class="form-group"><label for="modalUserId">ID Karyawan</label> <input type="text" id="modalUserId" placeholder="Contoh: GMS001">
-     </div>
-     <div class="form-group"><label for="modalUserNama">Nama</label> <input type="text" id="modalUserNama" placeholder="Nama lengkap">
-     </div>
-     <div class="form-group"><label for="modalUserEmail">Email (Optional)</label> <input type="email" id="modalUserEmail" placeholder="email@example.com">
-     </div>
-     <div class="form-group"><label for="modalUserTelpon">No. Telpon (Optional)</label> <input type="text" id="modalUserTelpon" placeholder="08xxxxxxxxxx">
-     </div>
-     <div class="form-group"><label for="modalUserLokasi">Lokasi Kerja</label> <input type="text" id="modalUserLokasi" placeholder="Contoh: Kantor Pusat">
-     </div>
-     <div class="form-group"><label for="modalUserJabatan">Jabatan</label> <input type="text" id="modalUserJabatan" placeholder="Contoh: Staff">
-     </div>
-     <div class="form-group"><label for="modalUserMode">Mode Absensi</label> <select id="modalUserMode" onchange="toggleKoordinat()"> <option value="Bebas">Bebas</option> <option value="Terkunci">Terkunci</option> </select>
-     </div>
-     <div id="koordinatSection" class="hidden">
-      <div class="form-group"><label for="modalUserLat">Latitude Kantor</label> <input type="text" id="modalUserLat" placeholder="-6.200000">
-      </div>
-      <div class="form-group"><label for="modalUserLong">Longitude Kantor</label> <input type="text" id="modalUserLong" placeholder="106.816666">
-      </div>
-     </div>
-     <div class="form-group"><label for="modalUserStatus">Status</label> <select id="modalUserStatus"> <option value="Aktif">Aktif</option> <option value="Tidak Aktif">Tidak Aktif</option> </select>
-     </div><button class="btn btn-primary" onclick="saveUser()" id="saveUserBtn">SIMPAN</button> <button class="btn btn-secondary" onclick="closeUserModal()">BATAL</button>
-     <div id="userModalMessage" class="hidden"></div>
-    </div>
-   </div>
- <script>
-// ========================================
-// URL DEPLOYMENT GOOGLE APPS SCRIPT
-// ========================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbwaimmfvSWK5Uh0cAbLh-eGpeEgyxMdtPxA5sdpWDottDZFOsX3bKTt_Yp3yjt0aY2wJQ/exec';
-let currentUser = null;
+  </div>
 
-// ========================================
-// PERBAIKAN: OPTIMASI GAMBAR (RESIZE)
-// Fungsi untuk mengecilkan ukuran foto sebelum dikirim ke server
-// ========================================
-async function compressImage(file, maxWidth = 800) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target.result;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwaimmfvSWK5Uh0cAbLh-eGpeEgyxMdtPxA5sdpWDottDZFOsX3bKTt_Yp3yjt0aY2wJQ/exec';
+    let currentUser = null;
 
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        // Mengembalikan data Base64 dengan kualitas 0.7 (70%)
-        resolve(canvas.toDataURL('image/jpeg', 0.7));
-      };
-      img.onerror = (err) => reject(err);
-    };
-    reader.onerror = (err) => reject(err);
-  });
-}
-
-// ========================================
-// PERBAIKAN: VALIDASI FOTO PENGAJUAN
-// ========================================
-async function previewPengajuanFoto(input) {
-  const preview = document.getElementById('previewPengajuan');
-  const file = input.files[0];
-  const maxSize = 5 * 1024 * 1024; // Limit 5MB sebelum kompresi
-
-  if (file) {
-    if (file.size > maxSize) {
-      alert("⚠️ Ukuran file terlalu besar! Maksimal 5MB. Sistem akan mencoba mengecilkannya secara otomatis.");
-    }
-    
-    try {
-      showLoading(true, "Memproses gambar...");
-      const compressedBase64 = await compressImage(file);
-      preview.src = compressedBase64;
-      preview.classList.remove('hidden');
-      showLoading(false);
-    } catch (error) {
-      console.error("Gagal memproses gambar:", error);
-      alert("Gagal memproses gambar. Silakan coba foto lain.");
-      showLoading(false);
-    }
-  }
-}
-
-// ========================================
-// PERBAIKAN: PENANGANAN ERROR PADA SUBMIT
-// ========================================
-async function submitPengajuan() {
-  const jenis = document.getElementById('jenisPengajuan').value;
-  const keterangan = document.getElementById('keteranganPengajuan').value;
-  const preview = document.getElementById('previewPengajuan');
-  
-  if (!jenis || !keterangan) {
-    alert("Mohon lengkapi jenis pengajuan dan keterangan.");
-    return;
-  }
-
-  showLoading(true, "Mengirim pengajuan...");
-
-  const data = {
-    action: 'submitPengajuan',
-    userId: currentUser.userId,
-    nama: currentUser.nama,
-    jenis: jenis,
-    keterangan: keterangan,
-    foto: preview.src.includes('base64') ? preview.src : "" // Kirim hasil resize
-  };
-
-  try {
-    // Menambahkan timeout fetch untuk antisipasi koneksi lambat
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 detik timeout
-
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-    const result = await response.json();
-
-    if (result.status === 'success') {
-      alert("✅ Pengajuan berhasil dikirim!");
-      // Reset form
-      document.getElementById('jenisPengajuan').value = "";
-      document.getElementById('keteranganPengajuan').value = "";
-      preview.src = "";
-      preview.classList.add('hidden');
-      showTab('absensi');
-    } else {
-      throw new Error(result.message || "Gagal mengirim data ke server.");
-    }
-  } catch (error) {
-    console.error("Error submit pengajuan:", error);
-    let msg = "Terjadi kesalahan saat mengirim pengajuan.";
-    if (error.name === 'AbortError') msg = "Koneksi timeout. Silakan cek sinyal internet Anda.";
-    alert("❌ " + msg);
-  } finally {
-    showLoading(false);
-  }
-}
-
-// ... (Sisa fungsi lainnya seperti login, clockIn, dll tetap sama)
-</script>
-    // ========================================
-    // UPDATE WAKTU REAL-TIME
-    // ========================================
-    function updateDateTime() {
+    // Update Waktu & Lokasi
+    function updateTime() {
       const now = new Date();
-      
-      const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-      const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
-                     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-      
-      const namaHari = hari[now.getDay()];
-      const tanggal = now.getDate();
-      const namaBulan = bulan[now.getMonth()];
-      const tahun = now.getFullYear();
-      
-      const jam = String(now.getHours()).padStart(2, '0');
-      const menit = String(now.getMinutes()).padStart(2, '0');
-      const detik = String(now.getSeconds()).padStart(2, '0');
-      
-      const dateElement = document.getElementById('currentDate');
-      const timeElement = document.getElementById('currentTime');
-      
-      if (dateElement) {
-        dateElement.textContent = `📅 ${namaHari}, ${tanggal} ${namaBulan} ${tahun}`;
-      }
-      
-      if (timeElement) {
-        timeElement.textContent = `${jam}:${menit}:${detik} WIB`;
-      }
+      document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+      document.getElementById('currentTime').textContent = now.toLocaleTimeString('id-ID');
     }
+    setInterval(updateTime, 1000);
 
-    // Update setiap 1 detik
-    setInterval(updateDateTime, 1000);
-
-    // ========================================
-    // UPDATE LOKASI REAL-TIME
-    // ========================================
-    function updateRealTimeLocation() {
-      const locationElement = document.getElementById('currentLocation');
-      
+    function updateLocation() {
       if (navigator.geolocation) {
-        locationElement.textContent = '📍 Mengambil lokasi...';
-        
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            
-            try {
-              // Gunakan Nominatim OpenStreetMap untuk reverse geocoding
-              const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
-              const data = await response.json();
-              
-              // Ambil nama lokasi yang relevan
-              const address = data.address;
-              let locationName = '';
-              
-              if (address.building || address.office || address.shop) {
-                locationName = address.building || address.office || address.shop;
-              } else if (address.road) {
-                locationName = address.road;
-              } else if (address.suburb || address.neighbourhood) {
-                locationName = address.suburb || address.neighbourhood;
-              } else if (address.city || address.town || address.village) {
-                locationName = address.city || address.town || address.village;
-              } else {
-                locationName = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-              }
-              
-              locationElement.textContent = `📍 ${locationName}`;
-            } catch (error) {
-              // Jika gagal ambil nama lokasi, tampilkan koordinat
-              locationElement.textContent = `📍 ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-            }
-          },
-          (error) => {
-            locationElement.textContent = '📍 Lokasi tidak tersedia';
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-          }
-        );
-      } else {
-        locationElement.textContent = '📍 GPS tidak didukung';
+        navigator.geolocation.getCurrentPosition(pos => {
+          document.getElementById('currentLocation').textContent = `📍 ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+        }, err => {
+          document.getElementById('currentLocation').textContent = "📍 GPS tidak aktif";
+        });
       }
     }
 
-    // ========================================
-    // TOGGLE PASSWORD
-    // ========================================
-    function togglePassword() {
-      const passwordInput = document.getElementById('loginPassword');
-      const eyeIcon = document.getElementById('eyeIcon');
-      
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        eyeIcon.textContent = '👁️';
-      } else {
-        passwordInput.type = 'password';
-        eyeIcon.textContent = '👁️‍������️';
-      }
-    }
-
-    // ========================================
-    // SHOW LOADING
-    // ========================================
-    function showLoading(show = true) {
-      const overlay = document.getElementById('loadingOverlay');
-      if (show) {
-        overlay.classList.add('active');
-      } else {
-        overlay.classList.remove('active');
-      }
-    }
-
-    // ========================================
-    // LOGIN
-    // ========================================
     async function login() {
-      const nama = document.getElementById('loginNama').value.trim();
-      const password = document.getElementById('loginPassword').value.trim();
-      
-      if (!nama || !password) {
-        showMessage('loginError', 'Nama dan Password harus diisi!', 'error');
-        return;
-      }
-
+      const nama = document.getElementById('loginNama').value;
+      const pass = document.getElementById('loginPassword').value;
       showLoading(true);
-
       try {
-        const response = await fetch(`${API_URL}?action=login&nama=${encodeURIComponent(nama)}&password=${encodeURIComponent(password)}`);
-        const result = await response.json();
-
-        if (result.success) {
+        const res = await fetch(`${API_URL}?action=login&nama=${encodeURIComponent(nama)}&password=${encodeURIComponent(pass)}`);
+        const result = await res.json();
+        showLoading(false);
+        if(result.success) {
           currentUser = result.data;
           localStorage.setItem('currentUser', JSON.stringify(currentUser));
-          
-          setTimeout(() => {
-            showLoading(false);
-            if (currentUser.role === 'admin') {
-              showAdminDashboard();
-            } else {
-              showUserDashboard();
-            }
-          }, 800);
+          showUserDashboard();
         } else {
-          showLoading(false);
-          showMessage('loginError', result.message, 'error');
+          alert(result.message);
         }
-      } catch (error) {
-        showLoading(false);
-        showMessage('loginError', 'Error: ' + error.message, 'error');
-      }
+      } catch (e) { showLoading(false); alert("Koneksi Error"); }
     }
 
-    // ========================================
-    // LOGOUT
-    // ========================================
-    function logout() {
-      localStorage.removeItem('currentUser');
-      currentUser = null;
-      document.getElementById('loginPage').classList.remove('hidden');
-      document.getElementById('userDashboard').classList.add('hidden');
-      document.getElementById('adminDashboard').classList.add('hidden');
-      document.getElementById('loginNama').value = '';
-      document.getElementById('loginPassword').value = '';
-      document.body.classList.add('login-mode');
-    }
-
-    // ========================================
-    // SHOW USER DASHBOARD
-    // ========================================
     function showUserDashboard() {
       document.getElementById('loginPage').classList.add('hidden');
       document.getElementById('userDashboard').classList.remove('hidden');
-      document.getElementById('adminDashboard').classList.add('hidden');
-      document.body.classList.remove('login-mode');
-      
-      updateDateTime();
-      updateRealTimeLocation(); // Ambil lokasi real-time saat dashboard muncul
-      checkTodayClockIn();
-      loadProfil();
+      document.getElementById('greetingName').textContent = currentUser.nama;
+      document.getElementById('greetingId').textContent = "ID: " + currentUser.id;
+      updateLocation();
     }
 
-    // ========================================
-    // SHOW ADMIN DASHBOARD
-    // ========================================
-    function showAdminDashboard() {
-      document.getElementById('loginPage').classList.add('hidden');
-      document.getElementById('userDashboard').classList.add('hidden');
-      document.getElementById('adminDashboard').classList.remove('hidden');
-      document.body.classList.remove('login-mode');
-      loadAdminStats();
+    function showTab(name) {
+      ['tabAbsensi', 'tabPengajuan', 'riwayatList', 'tabProfil'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.parentElement.classList.add('hidden');
+      });
+      const target = document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1));
+      if(target) target.classList.remove('hidden');
+      
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
     }
 
-    // ========================================
-    // SHOW TAB (USER)
-    // ========================================
-    function showTab(tabName) {
-      // Hide all tabs
-      document.getElementById('tabAbsensi').classList.add('hidden');
-      document.getElementById('tabPengajuan').classList.add('hidden');
-      document.getElementById('tabRiwayat').classList.add('hidden');
-      document.getElementById('tabProfil').classList.add('hidden');
-      
-      // Remove active from all buttons
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      
-      // Show selected tab
-      if (tabName === 'absensi') {
-        document.getElementById('tabAbsensi').classList.remove('hidden');
-        document.querySelectorAll('.tab-btn')[0].classList.add('active');
-        checkTodayClockIn(); // This will check both clock in status and pending submissions
-      } else if (tabName === 'pengajuan') {
-        document.getElementById('tabPengajuan').classList.remove('hidden');
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
-      } else if (tabName === 'riwayat') {
-        document.getElementById('tabRiwayat').classList.remove('hidden');
-        document.querySelectorAll('.tab-btn')[2].classList.add('active');
-        loadRiwayat();
-      } else if (tabName === 'profil') {
-        document.getElementById('tabProfil').classList.remove('hidden');
-        document.querySelectorAll('.tab-btn')[3].classList.add('active');
-      }
-    }
-
-    // ========================================
-    // SHOW ADMIN TAB
-    // ========================================
-    function showAdminTab(tabName) {
-      // Hide all tabs
-      document.getElementById('adminTabStats').classList.add('hidden');
-      document.getElementById('adminTabUsers').classList.add('hidden');
-      document.getElementById('adminTabAttendance').classList.add('hidden');
-      document.getElementById('adminTabSubmissions').classList.add('hidden');
-      
-      // Remove active from all buttons
-      document.querySelectorAll('#adminDashboard .tab-btn').forEach(btn => btn.classList.remove('active'));
-      
-      // Show selected tab
-      if (tabName === 'stats') {
-        document.getElementById('adminTabStats').classList.remove('hidden');
-        document.querySelectorAll('#adminDashboard .tab-btn')[0].classList.add('active');
-        loadAdminStats();
-      } else if (tabName === 'users') {
-        document.getElementById('adminTabUsers').classList.remove('hidden');
-        document.querySelectorAll('#adminDashboard .tab-btn')[1].classList.add('active');
-        loadAllUsers();
-      } else if (tabName === 'attendance') {
-        document.getElementById('adminTabAttendance').classList.remove('hidden');
-        document.querySelectorAll('#adminDashboard .tab-btn')[2].classList.add('active');
-        loadAllAttendance();
-      } else if (tabName === 'submissions') {
-        document.getElementById('adminTabSubmissions').classList.remove('hidden');
-        document.querySelectorAll('#adminDashboard .tab-btn')[3].classList.add('active');
-        loadAllSubmissions();
-      }
-    }
-
-    // ========================================
-    // CHECK TODAY CLOCK IN
-    // ========================================
-    async function checkTodayClockIn() {
-      const today = new Date();
-      const tanggal = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
-      
-      try {
-        const response = await fetch(`${API_URL}?action=checkClockIn&id=${currentUser.id}&tanggal=${tanggal}`);
-        const result = await response.json();
-
-        if (result.success && result.data.hasClockedIn) {
-          document.getElementById('clockInSection').classList.add('hidden');
-          document.getElementById('clockOutSection').classList.remove('hidden');
-          document.getElementById('pendingSubmissionSection').classList.add('hidden');
-        } else {
-          // Check if user has pending submission
-          await checkPendingSubmission();
-        }
-      } catch (error) {
-        console.error('Error checking clock in:', error);
-      }
-    }
-
-    // ========================================
-    // CHECK PENDING SUBMISSION
-    // ========================================
-    async function checkPendingSubmission() {
-      try {
-        const response = await fetch(`${API_URL}?action=checkPendingSubmission&id=${currentUser.id}`);
-        const result = await response.json();
-
-        if (result.success && result.data.hasPending) {
-          // User has pending submission - show waiting screen
-          document.getElementById('clockInSection').classList.add('hidden');
-          document.getElementById('clockOutSection').classList.add('hidden');
-          document.getElementById('pendingSubmissionSection').classList.remove('hidden');
-        } else {
-          // No pending submission - show normal clock in
-          document.getElementById('clockInSection').classList.remove('hidden');
-          document.getElementById('clockOutSection').classList.add('hidden');
-          document.getElementById('pendingSubmissionSection').classList.add('hidden');
-        }
-      } catch (error) {
-        console.error('Error checking pending submission:', error);
-        // Default to showing clock in button
-        document.getElementById('clockInSection').classList.remove('hidden');
-        document.getElementById('clockOutSection').classList.add('hidden');
-        document.getElementById('pendingSubmissionSection').classList.add('hidden');
-      }
-    }
-
-    // ========================================
-    // CLOCK IN
-    // ========================================
     async function clockIn() {
-      const btn = document.getElementById('clockInBtn');
-      btn.disabled = true;
-      btn.textContent = '⏳ Memproses...';
-
       showLoading(true);
-
-      try {
-        console.log('🚀 Memulai Clock In...');
-        console.log('👤 User:', currentUser);
-
-        // Get location
-        showMessage('absensiMessage', '📍 Mengambil lokasi GPS...', 'warning');
-        const position = await getCurrentPosition();
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        console.log('📍 Lokasi didapat:', latitude, longitude);
-        showMessage('absensiMessage', '📤 Mengirim data ke server...', 'warning');
-
+      navigator.geolocation.getCurrentPosition(async pos => {
         const payload = {
-          action: 'clockIn',
-          id: currentUser.id,
-          nama: currentUser.nama,
-          lokasiKerja: currentUser.lokasiKerja,
-          jabatan: currentUser.jabatan,
-          mode: currentUser.mode,
-          latKantor: currentUser.latKantor,
-          longKantor: currentUser.longKantor,
-          latitude: latitude,
-          longitude: longitude,
-          foto: ''
+          action: 'clockIn', id: currentUser.id, nama: currentUser.nama,
+          latitude: pos.coords.latitude, longitude: pos.coords.longitude
         };
-
-        console.log('📦 Payload:', payload);
-
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
-        console.log('📥 Response status:', response.status);
-
-        const result = await response.json();
-        console.log('�� Response data:', result);
-
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const result = await res.json();
         showLoading(false);
-
-        if (result.success) {
-          showMessage('absensiMessage', '✅ Clock In berhasil!', 'success');
-          checkTodayClockIn();
-        } else {
-          showMessage('absensiMessage', '❌ ' + result.message, 'error');
-        }
-      } catch (error) {
-        console.error('❌ Error Clock In:', error);
-        showLoading(false);
-        showMessage('absensiMessage', '❌ Error: ' + error.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '�� CLOCK IN';
-      }
-    }
-
-    // ========================================
-    // CLOCK OUT
-    // ========================================
-    async function clockOut() {
-      if (!confirm('Yakin ingin Clock Out sekarang?')) return;
-
-      const btn = document.getElementById('clockOutBtn');
-      btn.disabled = true;
-      btn.textContent = '⏳ Memproses...';
-
-      showLoading('Memproses Clock Out...');
-
-      try {
-        const position = await getCurrentPosition();
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        const payload = {
-          action: 'clockOut',
-          id: currentUser.id,
-          nama: currentUser.nama,
-          latitude: latitude,
-          longitude: longitude,
-          foto: ''
-        };
-
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        hideLoading();
-
-        if (result.success) {
-          showMessage('absensiMessage', '✅ Clock Out berhasil!', 'success');
-          setTimeout(() => {
-            location.reload();
-          }, 2000);
-        } else {
-          showMessage('absensiMessage', '❌ ' + result.message, 'error');
-        }
-      } catch (error) {
-        hideLoading();
-        showMessage('absensiMessage', '❌ Error: ' + error.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '📸 CLOCK OUT';
-      }
-    }
-
-    // ========================================
-    // GET CURRENT POSITION
-    // ========================================
-    function getCurrentPosition() {
-      return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-          reject(new Error('Geolocation tidak didukung browser Anda'));
-          return;
-        }
-
-        navigator.geolocation.getCurrentPosition(resolve, (error) => {
-          reject(new Error('Gagal mendapatkan lokasi. Pastikan GPS aktif.'));
-        });
+        alert(result.success ? "Berhasil Clock In" : result.message);
       });
     }
 
-    // ========================================
-    // PREVIEW FOTO PENGAJUAN
-    // ========================================
-    function previewPengajuanFoto(input) {
-      const preview = document.getElementById('previewPengajuan');
-      
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-          preview.src = e.target.result;
-          preview.classList.remove('hidden');
-        };
-        
-        reader.readAsDataURL(input.files[0]);
-      }
+    function showLoading(s) { document.getElementById('loadingOverlay').classList.toggle('active', s); }
+
+    function logout() {
+      localStorage.clear();
+      location.reload();
     }
 
-    // ========================================
-    // SUBMIT PENGAJUAN
-    // ========================================
-    async function submitPengajuan() {
-      const jenis = document.getElementById('jenisPengajuan').value;
-      const keterangan = document.getElementById('keteranganPengajuan').value.trim();
-      const fotoInput = document.getElementById('fotoPengajuan');
-
-      if (!jenis) {
-        showMessage('pengajuanMessage', 'Pilih jenis pengajuan!', 'error');
-        return;
-      }
-
-      if (!keterangan) {
-        showMessage('pengajuanMessage', 'Keterangan harus diisi!', 'error');
-        return;
-      }
-
-      if (!fotoInput.files || !fotoInput.files[0]) {
-        showMessage('pengajuanMessage', 'Upload foto surat keterangan!', 'error');
-        return;
-      }
-
-      const btn = document.getElementById('submitPengajuanBtn');
-      btn.disabled = true;
-      btn.textContent = '⏳ Mengirim...';
-
-      showLoading(true);
-
-      try {
-        // Convert foto to base64
-        const foto = await fileToBase64(fotoInput.files[0]);
-
-        const payload = {
-          action: 'submitPengajuan',
-          id: currentUser.id,
-          nama: currentUser.nama,
-          lokasiKerja: currentUser.lokasiKerja,
-          jenis: jenis,
-          keterangan: keterangan,
-          foto: foto
-        };
-
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        showLoading(false);
-
-        if (result.success) {
-          // Show success notification with WhatsApp reminder button
-          showSuccessNotification(jenis, keterangan);
-          
-          // Reset form immediately
-          document.getElementById('jenisPengajuan').value = '';
-          document.getElementById('keteranganPengajuan').value = '';
-          document.getElementById('fotoPengajuan').value = '';
-          document.getElementById('previewPengajuan').classList.add('hidden');
-          
-          // Switch to Absensi tab immediately and show pending status
-          showTab('absensi');
-          
-          // Force refresh the status
-          setTimeout(() => {
-            checkTodayClockIn();
-          }, 500);
-        } else {
-          showMessage('pengajuanMessage', '❌ ' + result.message, 'error');
-        }
-      } catch (error) {
-        showLoading(false);
-        showMessage('pengajuanMessage', '❌ Error: ' + error.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '📤 KIRIM PENGAJUAN';
-      }
-    }
-
-    // ========================================
-    // SHOW SUCCESS NOTIFICATION WITH WA BUTTON
-    // ========================================
-    function showSuccessNotification(jenis, keterangan) {
-      // Create notification modal
-      const modal = document.createElement('div');
-      modal.className = 'modal active';
-      modal.innerHTML = `
-        <div class="modal-content" style="max-width: 400px; text-align: center;">
-          <div style="font-size: 70px; margin-bottom: 20px; animation: scaleIn 0.5s ease-out;">✅</div>
-          <h2 style="color: #11998e; font-size: 24px; margin-bottom: 15px; font-weight: 700;">Pengajuan Terkirim!</h2>
-          <div style="background: #f0f9ff; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #11998e;">
-            <p style="color: #333; font-size: 15px; line-height: 1.6; margin: 0;">
-              📧 <strong>Admin telah menerima email notifikasi</strong> pengajuan Anda.
-            </p>
-            <p style="color: #666; font-size: 14px; margin: 15px 0 0 0; line-height: 1.5;">
-              Silakan tunggu admin menyetujui pengajuan <strong>${jenis}</strong> Anda.
-            </p>
-          </div>
-          <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-            <p style="color: #856404; font-size: 13px; margin: 0; line-height: 1.5;">
-              💡 <strong>Tip:</strong> Anda juga bisa mengingatkan admin via WhatsApp dengan tombol di bawah ini
-            </p>
-          </div>
-          <button onclick="sendWhatsAppReminder('${jenis}', '${encodeURIComponent(keterangan)}')" class="btn btn-success" style="margin-bottom: 10px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); display: flex; align-items: center; justify-content: center; gap: 8px;">
-            <span style="font-size: 20px;">💬</span> Ingatkan Admin via WhatsApp
-          </button>
-          <button onclick="closeNotificationModal()" class="btn btn-primary">Tutup</button>
-        </div>
-      `;
-      document.body.appendChild(modal);
-      
-      // Auto close after 8 seconds if user doesn't interact
-      setTimeout(() => {
-        if (document.body.contains(modal)) {
-          modal.remove();
-        }
-      }, 8000);
-    }
-
-    // ========================================
-    // SEND WHATSAPP REMINDER
-    // ========================================
-    async function sendWhatsAppReminder(jenis, keterangan) {
-      try {
-        // Get admin contact info from sheet
-        const response = await fetch(`${API_URL}?action=getAdminContact`);
-        const result = await response.json();
-
-        if (!result.success || !result.data.noTelpon) {
-          alert('❌ Nomor WhatsApp admin tidak ditemukan. Silakan hubungi admin melalui cara lain.');
-          return;
-        }
-
-        const adminPhone = result.data.noTelpon;
-        
-        // Decode keterangan
-        const decodedKeterangan = decodeURIComponent(keterangan);
-        
-        // Format pesan WhatsApp
-        const message = `🔔 *PENGINGAT PENGAJUAN*
-
-Halo Admin,
-
-Saya *${currentUser.nama}* (ID: ${currentUser.id}) telah mengirimkan pengajuan:
-
-📋 *Jenis:* ${jenis}
-📝 *Keterangan:* ${decodedKeterangan}
-🏢 *Lokasi Kerja:* ${currentUser.lokasiKerja}
-📅 *Tanggal:* ${new Date().toLocaleDateString('id-ID')}
-
-Mohon untuk segera ditinjau dan disetujui melalui dashboard admin.
-
-Terima kasih! 🙏`;
-
-        // Encode message for URL
-        const encodedMessage = encodeURIComponent(message);
-        
-        // Open WhatsApp
-        const waUrl = `https://wa.me/${adminPhone}?text=${encodedMessage}`;
-        window.open(waUrl, '_blank', 'noopener,noreferrer');
-        
-        // Close notification modal
-        closeNotificationModal();
-      } catch (error) {
-        alert('❌ Gagal mengambil kontak admin: ' + error.message);
-      }
-    }
-
-    // ========================================
-    // CLOSE NOTIFICATION MODAL
-    // ========================================
-    function closeNotificationModal() {
-      const modals = document.querySelectorAll('.modal');
-      modals.forEach(modal => {
-        if (modal.querySelector('.modal-content h2')?.textContent === 'Pengajuan Terkirim!') {
-          modal.remove();
-        }
-      });
-    }
-
-    // ========================================
-    // FILE TO BASE64
-    // ========================================
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // ========================================
-    // LOAD RIWAYAT
-    // ========================================
-    async function loadRiwayat() {
-      try {
-        const response = await fetch(`${API_URL}?action=getRiwayat&id=${currentUser.id}`);
-        const result = await response.json();
-
-        const container = document.getElementById('riwayatList');
-
-        if (result.success && result.data.length > 0) {
-          let html = '';
-          result.data.forEach(item => {
-            html += `
-              <div class="riwayat-item">
-                <div class="date">${item.tanggal}</div>
-                <div class="time-info">
-                  <span>Clock In: ${item.clockIn}</span>
-                  <span>Clock Out: ${item.clockOut}</span>
-                  <span>Durasi: ${item.durasi}</span>
-                </div>
-              </div>
-            `;
-          });
-          container.innerHTML = html;
-        } else {
-          container.innerHTML = '<div class="alert alert-warning">Belum ada riwayat absensi</div>';
-        }
-      } catch (error) {
-        document.getElementById('riwayatList').innerHTML = '<div class="alert alert-error">Gagal memuat data</div>';
-      }
-    }
-
-    // ========================================
-    // LOAD PROFIL
-    // ========================================
-    function loadProfil() {
-      document.getElementById('profilId').textContent = currentUser.id || '-';
-      document.getElementById('profilNama').textContent = currentUser.nama || '-';
-      document.getElementById('profilEmail').textContent = currentUser.email || '-';
-      document.getElementById('profilTelpon').textContent = currentUser.noTelpon || '-';
-      document.getElementById('profilLokasi').textContent = currentUser.lokasiKerja || '-';
-      document.getElementById('profilJabatan').textContent = currentUser.jabatan || '-';
-      document.getElementById('profilMode').textContent = currentUser.mode || '-';
-      document.getElementById('profilStatus').textContent = currentUser.status || '-';
-      
-      // Update greeting card
-      const greetingName = document.getElementById('greetingName');
-      const greetingId = document.getElementById('greetingId');
-      const greetingLokasi = document.getElementById('greetingLokasi');
-      if (greetingName) greetingName.textContent = currentUser.nama || '-';
-      if (greetingId) greetingId.textContent = 'ID: ' + (currentUser.id || '-');
-      if (greetingLokasi) greetingLokasi.textContent = '📍 Lokasi Kerja: ' + (currentUser.lokasiKerja || '-');
-    }
-
-    // ========================================
-    // LOAD ADMIN STATS
-    // ========================================
-    async function loadAdminStats() {
-      try {
-        const response = await fetch(`${API_URL}?action=getAdminStats`);
-        const result = await response.json();
-
-        if (result.success) {
-          document.getElementById('statTotal').textContent = result.data.totalKaryawan;
-          document.getElementById('statHadir').textContent = result.data.hadirHariIni;
-          document.getElementById('statTerlambat').textContent = result.data.terlambat;
-          document.getElementById('statPending').textContent = result.data.pengajuanPending;
-        }
-      } catch (error) {
-        console.error('Error loading stats:', error);
-      }
-    }
-
-    // ========================================
-    // LOAD ALL USERS
-    // ========================================
-    async function loadAllUsers() {
-      try {
-        const response = await fetch(`${API_URL}?action=getAllUsers`);
-        const result = await response.json();
-
-        const tbody = document.getElementById('usersTableBody');
-
-        if (result.success && result.data.length > 0) {
-          let html = '';
-          result.data.forEach(user => {
-            html += `
-              <tr>
-                <td>${user.id}</td>
-                <td>${user.nama}</td>
-                <td>${user.lokasiKerja}</td>
-                <td>${user.status}</td>
-                <td>
-                  <button class="btn btn-primary btn-small" onclick='editUser(${JSON.stringify(user)})'>Edit</button>
-                  <button class="btn btn-danger btn-small" onclick="deleteUser('${user.id}')">Hapus</button>
-                </td>
-              </tr>
-            `;
-          });
-          tbody.innerHTML = html;
-        } else {
-          tbody.innerHTML = '<tr><td colspan="5">Tidak ada data</td></tr>';
-        }
-      } catch (error) {
-        document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data</td></tr>';
-      }
-    }
-
-    // ========================================
-    // LOAD ALL ATTENDANCE
-    // ========================================
-    async function loadAllAttendance() {
-      try {
-        const response = await fetch(`${API_URL}?action=getAllAttendance`);
-        const result = await response.json();
-
-        const tbody = document.getElementById('attendanceTableBody');
-
-        if (result.success && result.data.length > 0) {
-          let html = '';
-          result.data.forEach(att => {
-            html += `
-              <tr>
-                <td>${att.tanggal}</td>
-                <td>${att.nama}</td>
-                <td>${att.lokasiKerja}</td>
-                <td>${att.clockIn}</td>
-                <td>${att.clockOut}</td>
-                <td>${att.durasi}</td>
-              </tr>
-            `;
-          });
-          tbody.innerHTML = html;
-        } else {
-          tbody.innerHTML = '<tr><td colspan="6">Tidak ada data</td></tr>';
-        }
-      } catch (error) {
-        document.getElementById('attendanceTableBody').innerHTML = '<tr><td colspan="6">Gagal memuat data</td></tr>';
-      }
-    }
-
-    // ========================================
-    // LOAD ALL SUBMISSIONS
-    // ========================================
-    async function loadAllSubmissions() {
-      try {
-        const response = await fetch(`${API_URL}?action=getAllSubmissions`);
-        const result = await response.json();
-
-        const tbody = document.getElementById('submissionsTableBody');
-
-        if (result.success && result.data.length > 0) {
-          let html = '';
-          result.data.forEach(sub => {
-            const statusBadge = sub.status === 'Pending' ? 'badge-pending' : 
-                               sub.status === 'Disetujui' ? 'badge-approved' : 'badge-rejected';
-            
-            const actionButtons = sub.status === 'Pending' ? `
-              <button class="btn btn-success btn-small" onclick="updateSubmissionStatus(${sub.rowIndex}, 'Disetujui')">✓ Setujui</button>
-              <button class="btn btn-danger btn-small" onclick="updateSubmissionStatus(${sub.rowIndex}, 'Ditolak')">✗ Tolak</button>
-            ` : '-';
-
-            const fotoLink = sub.foto ? `<a href="${sub.foto}" target="_blank">Lihat Foto</a>` : '-';
-
-            html += `
-              <tr>
-                <td>${sub.tanggal}</td>
-                <td>${sub.nama}</td>
-                <td>${sub.jenis}</td>
-                <td>${sub.keterangan}</td>
-                <td>${fotoLink}</td>
-                <td><span class="badge ${statusBadge}">${sub.status}</span></td>
-                <td>${actionButtons}</td>
-              </tr>
-            `;
-          });
-          tbody.innerHTML = html;
-        } else {
-          tbody.innerHTML = '<tr><td colspan="7">Tidak ada data</td></tr>';
-        }
-      } catch (error) {
-        document.getElementById('submissionsTableBody').innerHTML = '<tr><td colspan="7">Gagal memuat data</td></tr>';
-      }
-    }
-
-    // ========================================
-    // UPDATE SUBMISSION STATUS
-    // ========================================
-    async function updateSubmissionStatus(rowIndex, status) {
-      if (!confirm(`Yakin ingin ${status === 'Disetujui' ? 'menyetujui' : 'menolak'} pengajuan ini?`)) return;
-
-      try {
-        const payload = {
-          action: 'updateSubmissionStatus',
-          rowIndex: rowIndex,
-          status: status
-        };
-
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          alert('✅ Status berhasil diupdate!');
-          loadAllSubmissions();
-          loadAdminStats();
-        } else {
-          alert('❌ ' + result.message);
-        }
-      } catch (error) {
-        alert('❌ Error: ' + error.message);
-      }
-    }
-
-    // ========================================
-    // SHOW ADD USER MODAL
-    // ========================================
-    function showAddUserModal() {
-      isEditMode = false;
-      document.getElementById('userModalTitle').textContent = 'Tambah Karyawan';
-      document.getElementById('modalUserId').value = '';
-      document.getElementById('modalUserId').disabled = false;
-      document.getElementById('modalUserNama').value = '';
-      document.getElementById('modalUserEmail').value = '';
-      document.getElementById('modalUserTelpon').value = '';
-      document.getElementById('modalUserLokasi').value = '';
-      document.getElementById('modalUserJabatan').value = '';
-      document.getElementById('modalUserMode').value = 'Bebas';
-      document.getElementById('modalUserLat').value = '';
-      document.getElementById('modalUserLong').value = '';
-      document.getElementById('modalUserStatus').value = 'Aktif';
-      document.getElementById('koordinatSection').classList.add('hidden');
-      document.getElementById('userModal').classList.add('active');
-    }
-
-    // ========================================
-    // EDIT USER
-    // ========================================
-    function editUser(user) {
-      isEditMode = true;
-      editUserId = user.id;
-      document.getElementById('userModalTitle').textContent = 'Edit Karyawan';
-      document.getElementById('modalUserId').value = user.id;
-      document.getElementById('modalUserId').disabled = true;
-      document.getElementById('modalUserNama').value = user.nama;
-      document.getElementById('modalUserEmail').value = user.email || '';
-      document.getElementById('modalUserTelpon').value = user.noTelpon || '';
-      document.getElementById('modalUserLokasi').value = user.lokasiKerja;
-      document.getElementById('modalUserJabatan').value = user.jabatan;
-      document.getElementById('modalUserMode').value = user.mode;
-      document.getElementById('modalUserLat').value = user.latKantor || '';
-      document.getElementById('modalUserLong').value = user.longKantor || '';
-      document.getElementById('modalUserStatus').value = user.status;
-      
-      if (user.mode === 'Terkunci') {
-        document.getElementById('koordinatSection').classList.remove('hidden');
-      }
-      
-      document.getElementById('userModal').classList.add('active');
-    }
-
-    // ========================================
-    // TOGGLE KOORDINAT
-    // ========================================
-    function toggleKoordinat() {
-      const mode = document.getElementById('modalUserMode').value;
-      if (mode === 'Terkunci') {
-        document.getElementById('koordinatSection').classList.remove('hidden');
-      } else {
-        document.getElementById('koordinatSection').classList.add('hidden');
-      }
-    }
-
-    // ========================================
-    // SAVE USER
-    // ========================================
-    async function saveUser() {
-      const id = document.getElementById('modalUserId').value.trim();
-      const nama = document.getElementById('modalUserNama').value.trim();
-      const email = document.getElementById('modalUserEmail').value.trim();
-      const telpon = document.getElementById('modalUserTelpon').value.trim();
-      const lokasi = document.getElementById('modalUserLokasi').value.trim();
-      const jabatan = document.getElementById('modalUserJabatan').value.trim();
-      const mode = document.getElementById('modalUserMode').value;
-      const lat = document.getElementById('modalUserLat').value.trim();
-      const long = document.getElementById('modalUserLong').value.trim();
-      const status = document.getElementById('modalUserStatus').value;
-
-      if (!id || !nama || !lokasi || !jabatan) {
-        showMessage('userModalMessage', 'ID, Nama, Lokasi, dan Jabatan harus diisi!', 'error');
-        return;
-      }
-
-      if (mode === 'Terkunci' && (!lat || !long)) {
-        showMessage('userModalMessage', 'Latitude dan Longitude harus diisi untuk mode Terkunci!', 'error');
-        return;
-      }
-
-      const btn = document.getElementById('saveUserBtn');
-      btn.disabled = true;
-      btn.textContent = '⏳ Menyimpan...';
-
-      showLoading('Menyimpan data karyawan...');
-
-      try {
-        const payload = {
-          action: isEditMode ? 'updateUser' : 'addUser',
-          id: id,
-          oldId: editUserId,
-          nama: nama,
-          email: email,
-          noTelpon: telpon,
-          lokasiKerja: lokasi,
-          jabatan: jabatan,
-          mode: mode,
-          latKantor: lat,
-          longKantor: long,
-          status: status
-        };
-
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        hideLoading();
-
-        if (result.success) {
-          alert('✅ Data berhasil disimpan!');
-          closeUserModal();
-          loadAllUsers();
-        } else {
-          showMessage('userModalMessage', '❌ ' + result.message, 'error');
-        }
-      } catch (error) {
-        hideLoading();
-        showMessage('userModalMessage', '❌ Error: ' + error.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'SIMPAN';
-      }
-    }
-
-    // ========================================
-    // DELETE USER
-    // ========================================
-    async function deleteUser(id) {
-      if (!confirm(`Yakin ingin menghapus user ${id}?`)) return;
-
-      try {
-        const payload = {
-          action: 'deleteUser',
-          id: id
-        };
-
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          alert('✅ User berhasil dihapus!');
-          loadAllUsers();
-        } else {
-          alert('❌ ' + result.message);
-        }
-      } catch (error) {
-        alert('❌ Error: ' + error.message);
-      }
-    }
-
-    // ========================================
-    // CLOSE USER MODAL
-    // ========================================
-    function closeUserModal() {
-      document.getElementById('userModal').classList.remove('active');
-      document.getElementById('userModalMessage').classList.add('hidden');
-    }
-
-    // ========================================
-    // SHOW MESSAGE
-    // ========================================
-    function showMessage(elementId, message, type) {
-      const element = document.getElementById(elementId);
-      element.textContent = message;
-      element.className = `alert alert-${type}`;
-      element.classList.remove('hidden');
-      
-      setTimeout(() => {
-        element.classList.add('hidden');
-      }, 5000);
-    }
-
-    // ========================================
-    // CHECK SAVED LOGIN
-    // ========================================
-    window.onload = function() {
+    window.onload = () => {
       const saved = localStorage.getItem('currentUser');
-      if (saved) {
+      if(saved) {
         currentUser = JSON.parse(saved);
-        if (currentUser.role === 'admin') {
-          showAdminDashboard();
-        } else {
-          showUserDashboard();
-        }
-      } else {
-        document.body.classList.add('login-mode');
+        showUserDashboard();
       }
-      
-      updateDateTime();
     };
   </script>
-  </div>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bfdfda9c07dc649',t:'MTc2ODczODI0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ </body>
 </html>
