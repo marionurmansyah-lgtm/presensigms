@@ -20,4 +20,4 @@ Aplikasi manajemen kehadiran (absensi) berbasis web yang ringan, responsif, dan 
 2. Pastikan Anda sudah memiliki URL Deployment dari **Google Apps Script**.
 3. Buka file `index.html` dan ganti variabel `API_URL` dengan URL milik Anda:
    ```javascript
-   const API_URL = 'https://script.google.com/macros/s/AKfycbwaimmfvSWK5Uh0cAbLh-eGpeEgyxMdtPxA5sdpWDottDZFOsX3bKTt_Yp3yjt0aY2wJQ/exec';
+   const API_URL = 'https://script.google.com/macros/s/AKfycbzbzJfAys4lMRv3THcA8NwKfThmhRiwRVEmZIdqxDfFXGB4LI3wPdvE3ikwM5DuzDn8Vw/exec';
