@@ -1226,15 +1226,37 @@
         return;
       }
       
-      btn.innerHTML = '<div class="spinner"></div><span>Mengirim...</span>';
+      btn.innerHTML = '<div class="spinner"></div><span>Mengupload foto...</span>';
       
+      // Step 1: Upload foto ke Google Drive
+      const uploadResult = await apiCall('uploadFileToDrive', {
+        fileName: `Absensi_${currentUser.id}_${clockType}_${Date.now()}.jpg`,
+        fileBase64: capturedPhotoBase64,
+        mimeType: 'image/jpeg'
+      });
+      
+      if (!uploadResult.success) {
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span>Kirim Absensi</span>';
+        showToast(uploadResult.message || 'Gagal mengupload foto', 'error');
+        return;
+      }
+      
+      btn.innerHTML = '<div class="spinner"></div><span>Menyimpan absensi...</span>';
+      
+      // Step 2: Get current time
+      const now = new Date();
+      const waktu = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+      
+      // Step 3: Submit absensi dengan foto URL
       const result = await apiCall('submitAbsensi', {
         id: currentUser.id,
         nama: currentUser.nama,
         type: clockType,
+        waktu: waktu,
         lat: currentLocation.lat,
         lng: currentLocation.lng,
-        foto: capturedPhotoBase64,
+        photoUrl: uploadResult.fileUrl,
         tanggal: getToday()
       });
       
@@ -1242,7 +1264,7 @@
       btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span>Kirim Absensi</span>';
       
       if (result.success) {
-        showToast(`${clockType === 'masuk' ? 'Clock In' : 'Clock Out'} berhasil!`);
+        showToast(`${clockType === 'masuk' ? 'Clock In' : 'Clock Out'} berhasil di ${waktu}!`);
         closeClockModal();
         loadTodayAbsensi();
       } else {
@@ -2068,5 +2090,5 @@
       }
     });
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c0aa030227be785',t:'MTc2ODg3MDczMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c0ae509e59f3912',t:'MTc2ODg3MzU1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
