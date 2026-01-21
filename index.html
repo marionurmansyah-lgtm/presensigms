@@ -1,258 +1,196 @@
 <!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Presensi Digital - Graha Mega Solusindo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sistem Presensi – Graha Mega Solusindo</title>
 
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      font-family:Segoe UI,Tahoma,sans-serif;
-      min-height:100vh;
-      background:linear-gradient(135deg,#1e3a8a,#1e40af);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-    }
-    .container{width:100%;max-width:480px}
-    .company{text-align:center;color:#fff;margin-bottom:20px}
-    .company h1{font-size:28px;font-weight:700}
-    .card{
-      background:#fff;
-      border-radius:18px;
-      padding:30px;
-      box-shadow:0 20px 50px rgba(0,0,0,.3)
-    }
-    h2{color:#1e3a8a;margin-bottom:6px}
-    p.sub{color:#6b7280;font-size:14px;margin-bottom:20px}
-    label{font-size:14px;font-weight:600;margin-top:14px;display:block}
-    input,select{
-      width:100%;
-      padding:12px;
-      border-radius:10px;
-      border:2px solid #e5e7eb;
-      margin-top:6px;
-      font-size:15px
-    }
-    input:focus{outline:none;border-color:#1e3a8a}
-    button{
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:10px;
-      font-size:16px;
-      font-weight:600;
-      cursor:pointer;
-      margin-top:14px
-    }
-    .btn-primary{background:#1e3a8a;color:#fff}
-    .btn-success{background:#10b981;color:#fff}
-    .btn-danger{background:#ef4444;color:#fff}
-    .btn-outline{
-      background:#fff;
-      border:2px solid #1e3a8a;
-      color:#1e3a8a
-    }
-    .alert{
-      padding:12px;
-      border-radius:10px;
-      font-size:14px;
-      margin-bottom:15px
-    }
-    .alert-error{background:#fee2e2;color:#991b1b}
-    .alert-success{background:#d1fae5;color:#065f46}
-    .alert-info{background:#dbeafe;color:#1e40af}
-    .status{
-      background:#1e3a8a;
-      color:#fff;
-      border-radius:14px;
-      padding:18px;
-      text-align:center;
-      margin-bottom:18px
-    }
-    .status .time{font-size:28px;font-weight:700}
-    .status .date{font-size:13px;opacity:.9}
-    .footer{
-      text-align:center;
-      color:#fff;
-      font-size:12px;
-      margin-top:16px;
-      opacity:.85
-    }
-    video,canvas,img{
-      width:100%;
-      border-radius:12px
-    }
-  </style>
+<!-- STYLE -->
+<style>
+body{margin:0;font-family:Inter,Arial;background:#f4f6fb;color:#111}
+header{background:#0f2a44;color:#fff;padding:16px;text-align:center}
+.card{background:#fff;border-radius:14px;padding:16px;margin:12px}
+.btn{padding:12px;border-radius:10px;border:none;font-weight:600;cursor:pointer}
+.primary{background:#0f2a44;color:#fff}
+.success{background:#16a34a;color:#fff}
+.danger{background:#dc2626;color:#fff}
+.secondary{background:#64748b;color:#fff}
+.small{font-size:13px;color:#555}
+.hidden{display:none}
+input,select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #ccc}
+h3{margin:0 0 8px}
+footer{text-align:center;color:#999;font-size:12px;padding:16px}
+video,canvas,img{width:100%;border-radius:12px}
+</style>
+
+<!-- CHART -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-<div class="container">
-  <div class="company">
-    <h1>Graha Mega Solusindo</h1>
-  </div>
 
-  <div class="card" id="app"></div>
+<header>
+  <h2>Graha Mega Solusindo</h2>
+  <div class="small">Sistem Presensi Digital</div>
+</header>
 
-  <div class="footer">
-    Supported by Klase Auto Graha<br>
-    <small>rionurmansyah</small>
-  </div>
-</div>
+<div id="app"></div>
+
+<footer>supported by Klase Auto Graha · rionurmansyah</footer>
 
 <script>
 /* ================= CONFIG ================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbyT3bQphyo9R6us3IQa9PhrFN31qt3PFGEQ_BemjSkTc0h6ZNKOTfKOHRWVDkco5ic1/exec';
+const API_URL = "PASTE_URL_APPS_SCRIPT_KAMU_DISINI";
 
-let currentUser=null;
-let locationData=null;
-let stream=null;
-let photoBase64=null;
+/* ================= STATE ================= */
+let USER=null, LOC=null, PHOTO=null, MODE=null;
 
-/* ================= HELPER ================= */
-async function api(action,data={}){
-  const p=new URLSearchParams({action,...data});
-  const r=await fetch(API_URL+'?'+p.toString());
-  return r.json();
+/* ================= UTIL ================= */
+function el(id){return document.getElementById(id)}
+function api(action,data={}){
+  const qs=new URLSearchParams({action,...data}).toString();
+  return fetch(API_URL+"?"+qs).then(r=>r.json());
 }
-function $(id){return document.getElementById(id)}
-function alertBox(type,msg){
-  return `<div class="alert alert-${type}">${msg}</div>`;
+function post(action,data){
+  return fetch(API_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action,...data})
+  }).then(r=>r.json());
+}
+
+/* ================= GPS ================= */
+function getGPS(){
+  return new Promise((ok,err)=>{
+    navigator.geolocation.getCurrentPosition(
+      p=>ok({lat:p.coords.latitude,lng:p.coords.longitude}),
+      e=>err(e.message),
+      {enableHighAccuracy:true}
+    );
+  });
 }
 
 /* ================= LOGIN ================= */
 function showLogin(){
-  $('app').innerHTML=`
-    <h2>Selamat Datang</h2>
-    <p class="sub">Sistem Presensi Digital</p>
+  el('app').innerHTML=`
+  <div class="card">
+    <h3>Login</h3>
+    <input id="id" placeholder="ID Karyawan">
+    <input id="name" placeholder="Nama Lengkap">
+    <button class="btn primary" onclick="login()">Masuk</button>
     <div id="msg"></div>
-
-    <label>ID Karyawan</label>
-    <input id="id">
-
-    <label>Nama Lengkap</label>
-    <input id="name">
-
-    <label>Password Admin (jika admin)</label>
-    <input id="pass" type="password">
-
-    <button class="btn-primary" onclick="login()">Masuk</button>
-  `;
+  </div>`;
 }
 async function login(){
-  const res=await api('login',{
-    id:$('id').value.trim(),
-    name:$('name').value.trim(),
-    password:$('pass').value.trim()
-  });
-  if(!res.success){
-    $('msg').innerHTML=alertBox('error',res.message);
-    return;
-  }
-  currentUser=res.user;
-  currentUser.adminWhatsApp=res.adminWhatsApp||'';
-  currentUser.role==='Admin'?adminDashboard():userDashboard();
+  const r=await api('login',{id:el('id').value,name:el('name').value});
+  if(!r.success)return el('msg').innerText=r.message;
+  USER=r.user;
+  showDashboard();
 }
 
-/* ================= USER ================= */
-async function userDashboard(){
-  const att=await api('checkAttendance',{id:currentUser.id});
-  const now=new Date();
-  $('app').innerHTML=`
-    <div class="status">
-      <div class="time">${now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</div>
-      <div class="date">${now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
-    </div>
+/* ================= DASHBOARD ================= */
+async function showDashboard(){
+  const a=await api('checkAttendance',{id:USER.id});
+  el('app').innerHTML=`
+  <div class="card">
+    <h3>👤 ${USER.name}</h3>
+    <div class="small">ID: ${USER.id} · ${USER.location}</div>
+  </div>
 
-    ${att.clockIn?alertBox('success','Clock In: '+att.clockIn):''}
-    ${att.clockOut?alertBox('info','Clock Out: '+att.clockOut):''}
+  <div class="card">
+    <button class="btn success" onclick="openCam('clockIn')" ${a.clockIn?'disabled':''}>Clock In</button>
+    <button class="btn danger" onclick="openCam('clockOut')" ${!a.clockIn||a.clockOut?'disabled':''}>Clock Out</button>
+  </div>
 
-    ${!att.clockIn?`
-      <button class="btn-success" onclick="openCamera('in')">Clock In</button>
-    `:!att.clockOut?`
-      <button class="btn-danger" onclick="openCamera('out')">Clock Out</button>
-    `:`<div class="alert alert-success">Absensi hari ini selesai</div>`}
-
-    <button class="btn-outline" onclick="history()">Riwayat</button>
-    <button class="btn-outline" onclick="logout()">Keluar</button>
-  `;
-  navigator.geolocation.getCurrentPosition(p=>{
-    locationData={
-      latitude:p.coords.latitude,
-      longitude:p.coords.longitude
-    };
-  });
+  <div class="card">
+    <button class="btn secondary" onclick="showHistory()">Riwayat</button>
+    <button class="btn secondary" onclick="showPengajuan()">Pengajuan</button>
+    ${USER.role==='Admin'?'<button class="btn primary" onclick="showAdmin()">Admin</button>':''}
+    <button class="btn" onclick="showLogin()">Keluar</button>
+  </div>`;
 }
 
 /* ================= CAMERA ================= */
-async function openCamera(mode){
-  $('app').innerHTML=`
-    <h2>${mode==='in'?'Clock In':'Clock Out'}</h2>
-    <video id="video" autoplay></video>
-    <canvas id="canvas" style="display:none"></canvas>
-    <button class="btn-primary" onclick="snap('${mode}')">Ambil Foto</button>
-    <button class="btn-outline" onclick="userDashboard()">Batal</button>
-  `;
-  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
-  $('video').srcObject=stream;
+async function openCam(mode){
+  MODE=mode;
+  LOC=await getGPS();
+  el('app').innerHTML=`
+  <div class="card">
+    <h3>${mode==='clockIn'?'Clock In':'Clock Out'}</h3>
+    <video id="v" autoplay playsinline></video>
+    <button class="btn primary" onclick="shot()">Ambil Foto</button>
+  </div>`;
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}})
+    .then(s=>el('v').srcObject=s);
 }
-function snap(mode){
-  const v=$('video'),c=$('canvas');
+function shot(){
+  const v=el('v');
+  const c=document.createElement('canvas');
   c.width=v.videoWidth;c.height=v.videoHeight;
   c.getContext('2d').drawImage(v,0,0);
-  photoBase64=c.toDataURL('image/jpeg');
-  stream.getTracks().forEach(t=>t.stop());
-
-  $('app').innerHTML=`
-    <img src="${photoBase64}">
-    <button class="btn-success" onclick="submit('${mode}')">Kirim</button>
-    <button class="btn-outline" onclick="userDashboard()">Batal</button>
-  `;
+  PHOTO=c.toDataURL('image/jpeg');
+  sendAbsensi();
 }
-async function submit(mode){
-  const res=await api(mode==='in'?'clockIn':'clockOut',{
-    id:currentUser.id,
-    name:currentUser.name,
-    latitude:locationData.latitude,
-    longitude:locationData.longitude,
-    photoBase64
+async function sendAbsensi(){
+  const r=await api(MODE,{
+    id:USER.id,name:USER.name,
+    latitude:LOC.lat,longitude:LOC.lng
   });
-  alert(res.message);
-  userDashboard();
+  if(!r.success)return alert(r.message);
+  await post('uploadFoto',{id:USER.id,mode:MODE,photo:PHOTO});
+  showDashboard();
 }
 
 /* ================= HISTORY ================= */
-async function history(){
-  const r=await api('getUserHistory',{id:currentUser.id});
-  let h='';
-  r.data.forEach(x=>{
-    h+=`<div class="alert alert-info">${x.tanggal} | ${x.jamMasuk} - ${x.jamPulang}</div>`;
+async function showHistory(){
+  const r=await api('getUserHistory',{id:USER.id});
+  el('app').innerHTML='<div class="card"><h3>Riwayat</h3>'+
+    r.data.map(d=>${d.tanggal} ${d.jamMasuk}-${d.jamPulang}).join('<br>')+
+    '<br><button class="btn" onclick="showDashboard()">Kembali</button></div>';
+}
+
+/* ================= PENGAJUAN ================= */
+function showPengajuan(){
+  el('app').innerHTML=`
+  <div class="card">
+    <h3>Pengajuan</h3>
+    <select id="j"><option>Izin</option><option>Cuti</option></select>
+    <input id="t" type="date">
+    <textarea id="a" maxlength="100"></textarea>
+    <button class="btn primary" onclick="kirimPengajuan()">Kirim</button>
+    <button class="btn" onclick="showDashboard()">Kembali</button>
+  </div>`;
+}
+async function kirimPengajuan(){
+  const r=await api('createPengajuan',{
+    id:USER.id,name:USER.name,
+    jenis:el('j').value,tanggal:el('t').value,alasan:el('a').value
   });
-  $('app').innerHTML=`
-    <h2>Riwayat</h2>
-    ${h||'<div class="alert alert-info">Kosong</div>'}
-    <button class="btn-outline" onclick="userDashboard()">Kembali</button>
-  `;
+  alert(r.message);showDashboard();
 }
 
 /* ================= ADMIN ================= */
-async function adminDashboard(){
-  const d=await api('getAdminDashboard');
-  $('app').innerHTML=`
-    <h2>Admin Dashboard</h2>
-    <div class="alert alert-info">Total Karyawan: ${d.totalKaryawan}</div>
-    <div class="alert alert-success">Sudah Absen: ${d.sudahAbsen}</div>
-    <div class="alert alert-error">Belum Absen: ${d.belumAbsen}</div>
-    <button class="btn-outline" onclick="logout()">Keluar</button>
-  `;
+async function showAdmin(){
+  const r=await api('getAttendanceReportAdvanced');
+  el('app').innerHTML=`
+  <div class="card">
+    <h3>Admin</h3>
+    <canvas id="g"></canvas>
+    <button class="btn primary" onclick="exportCSV()">Export CSV</button>
+    <button class="btn" onclick="showDashboard()">Kembali</button>
+  </div>`;
+  new Chart(el('g'),{
+    type:'bar',
+    data:{labels:r.data.map(x=>x[0]),
+    datasets:[{label:'Hadir',data:r.data.map(()=>1)}]}
+  });
 }
-
-/* ================= LOGOUT ================= */
-function logout(){
-  currentUser=null;
-  showLogin();
+function exportCSV(){
+  api('exportCSV').then(r=>{
+    const b=new Blob([r.csv],{type:'text/csv'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download=r.filename;a.click();
+  });
 }
 
 /* ================= INIT ================= */
@@ -260,7 +198,3 @@ showLogin();
 </script>
 </body>
 </html>
-
-
-
-
