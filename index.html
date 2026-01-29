@@ -2,193 +2,105 @@
 <html lang="id">
 <head>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <meta charset="UTF-8">
-    
-    <!-- TAMBAHKAN KODE PWA INI (START) -->
+    <meta charset="UTF-8">
+    <!-- TAMBAHKAN KODE PWA INI -->
     <meta name="theme-color" content="#1e293b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GMS Presensi">
-    
-    <!-- 1. Icon untuk iOS (iPhone) -->
-    <!-- LINK INI SAMA DENGAN LOGO LOGIN -->
     <link rel="apple-touch-icon" href="https://i.imgur.com/xX4QN18.png">
-
-    <!-- 2. Manifest untuk Android (Agar bisa di-Install) -->
-    <!-- GANTI src DI BAWAH DENGAN LINK LOGO YANG SAMA -->
     <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Sistem Presensi GMS","short_name":"GMS Presensi","start_url":".","display":"standalone","background_color":"#1e293b","theme_color":"#1e293b","icons":[{"src":"https://i.imgur.com/xX4QN18.png","sizes":"192x192","type":"image/png"},{"src":"https://i.imgur.com/xX4QN18.png","sizes":"512x512","type":"image/png"}]}'>
-    <!-- TAMBAHKAN KODE PWA INI (END) -->
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta charset="UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistem Presensi GMS - Ultimate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
-        /* --- UI PROFESSIONAL V2 --- */
+        /* --- CSS STYLE --- */
     :root {
-        --primary: #1e293b; 
-        --primary-hover: #0f172a;
-        --primary-light: #334155;
-        --accent: #3b82f6; 
-        --success: #10b981;
-        --success-light: #d1fae5;
-        --danger: #ef4444;
-        --danger-light: #fee2e2;
-        --warning: #f59e0b;
-        
-        --bg-app: #f1f5f9; 
-        --bg-pattern: radial-gradient(#cbd5e1 1px, transparent 1px);
-        --surface: #ffffff;
-        
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --text-light: #94a3b8;
-        
-        --border: #e2e8f0;
-        --radius-sm: 8px;
-        --radius-md: 16px;
-        --radius-lg: 24px;
+        --primary: #1e293b; --primary-hover: #0f172a; --primary-light: #334155;
+        --accent: #3b82f6; --success: #10b981; --success-light: #d1fae5;
+        --danger: #ef4444; --danger-light: #fee2e2; --warning: #f59e0b;
+        --bg-app: #f1f5f9; --bg-pattern: radial-gradient(#cbd5e1 1px, transparent 1px);
+        --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b;
+        --text-light: #94a3b8; --border: #e2e8f0; --radius-sm: 8px;
+        --radius-md: 16px; --radius-lg: 24px;
         --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        --glass-bg: rgba(255, 255, 255, 0.85);
-        --glass-border: rgba(255, 255, 255, 0.6);
+        --glass-bg: rgba(255, 255, 255, 0.85); --glass-border: rgba(255, 255, 255, 0.6);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
     body { 
-        background-color: var(--bg-app); 
-        background-image: var(--bg-pattern);
-        background-size: 20px 20px;
-        color: var(--text-main); 
-        font-family: 'Inter', sans-serif; 
-        padding-bottom: 100px; 
+        background-color: var(--bg-app); background-image: var(--bg-pattern); background-size: 20px 20px;
+        color: var(--text-main); font-family: 'Inter', sans-serif; padding-bottom: 100px; 
         -webkit-font-smoothing: antialiased;
     }
     
     .hidden { display: none !important; }
-    
     .container { max-width: 480px; margin: 0 auto; padding: 0 20px; width: 100%; }
     .container.admin { max-width: 1200px; }
 
     .card { 
-        background: var(--surface); 
-        border-radius: var(--radius-md); 
-        padding: 24px; 
-        box-shadow: var(--shadow-sm); 
-        margin-bottom: 24px; 
-        border: 1px solid var(--border); 
+        background: var(--surface); border-radius: var(--radius-md); padding: 24px; 
+        box-shadow: var(--shadow-sm); margin-bottom: 24px; border: 1px solid var(--border); 
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     
-    /* BUTTONS WITH SPINNER */
+    /* BUTTONS */
     .btn { 
-        padding: 14px 24px; 
-        border: none; 
-        border-radius: 12px; 
-        font-weight: 600; 
-        font-size: 0.95rem; 
-        letter-spacing: 0.025em; 
-        cursor: pointer; 
-        width: 100%; 
-        transition: all 0.2s ease; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        gap: 8px;
+        padding: 14px 24px; border: none; border-radius: 12px; font-weight: 600; 
+        font-size: 0.95rem; letter-spacing: 0.025em; cursor: pointer; 
+        width: 100%; transition: all 0.2s ease; display: flex; 
+        align-items: center; justify-content: center; gap: 8px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        position: relative;
-        overflow: hidden;
+        position: relative; overflow: hidden;
     }
-    
     .btn:active { transform: scale(0.98); }
     .btn:disabled { opacity: 0.7; cursor: wait; }
     
-    .btn-primary { 
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); 
-        color: white; 
-        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.25); 
-    }
-    
-    .btn-success { 
-        background: linear-gradient(135deg, var(--success) 0%, #059669 100%); 
-        color: white; 
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); 
-    }
-    
-    .btn-danger { 
-        background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%); 
-        color: white; 
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); 
-    }
-    
-    .btn-outline { 
-        background: white; 
-        border: 1px solid var(--border); 
-        color: var(--text-main); 
-        box-shadow: none; 
-    }
+    .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; box-shadow: 0 4px 12px rgba(30, 41, 59, 0.25); }
+    .btn-success { background: linear-gradient(135deg, var(--success) 0%, #059669 100%); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
+    .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); }
+    .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: none; }
     .btn-outline:hover { background: #f8fafc; }
     
     .btn-sm { padding: 8px 16px; font-size: 0.8rem; width: auto; display: inline-flex; height: 36px; }
     .btn-print { background: var(--text-main); color: white; width: auto; box-shadow: none; }
     .btn-excel { background: #217346; color: white; width: auto; box-shadow: none; }
 
-    /* SPINNER ANIMATION */
+    /* SPINNER */
     .spinner {
-        width: 16px; height: 16px;
-        border: 2px solid #ffffff;
-        border-bottom-color: transparent;
-        border-radius: 50%;
-        display: inline-block;
-        box-sizing: border-box;
+        width: 16px; height: 16px; border: 2px solid #ffffff; border-bottom-color: transparent;
+        border-radius: 50%; display: inline-block; box-sizing: border-box;
         animation: rotation 1s linear infinite;
     }
     @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     /* INPUTS */
     input, select, textarea { 
-        width: 100%; 
-        padding: 14px 16px; 
-        border: 1px solid var(--border); 
-        border-radius: 12px; 
-        margin-bottom: 16px; 
-        font-size: 0.95rem; 
-        background: #fdfdfd;
-        transition: all 0.2s;
-        font-family: 'Inter', sans-serif;
+        width: 100%; padding: 14px 16px; border: 1px solid var(--border); 
+        border-radius: 12px; margin-bottom: 16px; font-size: 0.95rem; 
+        background: #fdfdfd; transition: all 0.2s; font-family: 'Inter', sans-serif;
         box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
     }
-    
     input:focus, select:focus, textarea:focus { 
-        border-color: var(--accent); 
-        outline: none; 
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); 
-        background: #fff;
+        border-color: var(--accent); outline: none; 
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); background: #fff;
     }
-    
     label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; letter-spacing: 0.025em; }
 
     /* LOGIN */
     .login-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; padding: 20px; }
     .login-card { 
-        width: 100%; 
-        max-width: 400px; 
-        text-align: center; 
-        background: white; 
-        padding: 40px 30px; 
-        border-radius: 32px; 
-        box-shadow: var(--shadow-lg); 
-        border: 1px solid var(--border);
+        width: 100%; max-width: 400px; text-align: center; 
+        background: white; padding: 40px 30px; border-radius: 32px; 
+        box-shadow: var(--shadow-lg); border: 1px solid var(--border);
     }
-    .app-logo { 
-        width: 80px; height: 80px; margin: 0 auto 24px; display: block; object-fit: contain; 
-        border-radius: 20px; box-shadow: var(--shadow-md);
-    }
+    .app-logo { width: 80px; height: 80px; margin: 0 auto 24px; display: block; object-fit: contain; border-radius: 20px; box-shadow: var(--shadow-md); }
     .login-footer { margin-top: 30px; text-align: center; color: var(--text-light); font-size: 0.85rem; }
     .brand-name { font-weight: 800; font-size: 1.1rem; margin-bottom: 4px; color: var(--primary); }
     .support-text { font-weight: 500; }
@@ -196,33 +108,20 @@
     /* PROFILE & CLOCK */
     .profile-header { 
         background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%); 
-        color: white; 
-        padding: 50px 24px 80px; 
-        border-radius: 0 0 40px 40px; 
-        margin-top: -20px; 
-        box-shadow: var(--shadow-md);
-        position: relative;
+        color: white; padding: 50px 24px 80px; border-radius: 0 0 40px 40px; 
+        margin-top: -20px; box-shadow: var(--shadow-md); position: relative;
     }
     .profile-content { display: flex; align-items: center; gap: 16px; }
     .profile-avatar-icon { 
-        width: 60px; height: 60px; border-radius: 50%; 
-        background: rgba(255,255,255,0.25); 
-        display: flex; align-items: center; justify-content: center; 
-        border: 2px solid rgba(255,255,255,0.6);
+        width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.25); 
+        display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255,255,255,0.6);
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     
     .clock-widget { 
-        background: var(--glass-bg); 
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        margin-top: -50px; 
-        margin-bottom: 30px; 
-        padding: 24px; 
-        border-radius: 24px; 
-        text-align: center; 
-        box-shadow: var(--shadow-lg); 
-        position: relative; 
-        z-index: 10;
+        background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        margin-top: -50px; margin-bottom: 30px; padding: 24px; border-radius: 24px; 
+        text-align: center; box-shadow: var(--shadow-lg); position: relative; z-index: 10;
         border: 1px solid var(--glass-border);
     }
     #date-display { font-size: 0.75rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1.5px; }
@@ -333,12 +232,12 @@
                 </div>
 
                 <button onclick="app.login()" class="btn btn-primary" style="margin-top:24px; width:100%;">Masuk Aplikasi</button>
-            </div>
-            
-            <!-- FOOTER SESUAI REQUEST -->
-            <div class="login-footer">
-                <p class="brand-name">Graha Mega Solusindo</p>
-                <p class="support-text">supported by : Klase Auto Graha</p>
+                
+                <!-- FOOTER -->
+                <div class="login-footer">
+                    <p class="brand-name">Graha Mega Solusindo</p>
+                    <p class="support-text">supported by : Klase Auto Graha</p>
+                </div>
             </div>
         </div>
     </section>
@@ -574,13 +473,13 @@
 
     <!-- JAVASCRIPT -->
     <script>
-    // --- KONFIGURASI ---
-    const SUPABASE_URL = 'https://scvzpmmgbpznacitogta.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjdnpwbW1nYnB6bmFjaXRvZ3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0NTE1NTYsImV4cCI6MjA4NTAyNzU1Nn0.ujiG2BoQFs0_ZHyZCqCpjMtimCHvjtyLRbJbAy9Pl3A';
+    // --- >>> KONFIGURASI SUPABASE (WAJIB DIISI SEBELUM UPLOAD <<< ---
+    const SUPABASE_URL = 'https://sjvjmwxugpnqguqtbtnt.supabase.co';   // Misal: https://xyzcompany.supabase.co
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqdmptd3h1Z3BucWd1cXRidG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MDA0MTAsImV4cCI6MjA4NTI3NjQxMH0.Z54oBK-aS4EXwVt3ZO1cRaI5GKfRLXrgsU4TLdICvj4'; // Key panjang (eyJhbGc...)
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
-    // GANTI DENGAN NOMOR WA ADMIN (Format: 628...)
-    const ADMIN_WA_NUMBER = '6285693456415'; 
+    // --- >>> GANTI DENGAN NOMOR WA RIO (Format 628...) <<< ---
+    const ADMIN_WA_NUMBER = '628XXXXXXXXXX'; 
 
     // --- DATABASE OBJECT ---
     const DB = {
@@ -694,7 +593,7 @@
             const id = $('login-id').value.trim();
             const name = $('login-name').value.trim();
 
-            // --- 1. LOGIN SUPER ADMIN ---
+            // 1. LOGIN SUPER ADMIN (HARDCODED)
             if (id === 'klase123#' && name.toLowerCase() === 'rio klase') {
                 const superAdminUser = {
                     ID: 'klase123#',
@@ -709,10 +608,12 @@
                 this.route();
                 return;
             }
-            // ------------------------------------------
 
-            // --- 2. LOGIN NORMAL ---
-            if(!SUPABASE_URL.includes('http')) return showToast("Supabase URL belum diisi!", "error");
+            // 2. LOGIN NORMAL (DATABASE)
+            if(!SUPABASE_URL.includes('http') || SUPABASE_URL.includes('ISI_DENGAN_URL_DISINI')) {
+                showToast("Kode HTML belum di-update! Isi URL & Key Supabase dulu!", "error");
+                return;
+            }
 
             const users = await DB.getUsers();
             const user = users.find(u => u.id_user === id); 
@@ -801,15 +702,15 @@
             if(!date) return showToast("Harap pilih tanggal!", "error");
             if(desc.length > 100) return showToast(`Keterangan terlalu panjang! Max 100 kar. (${desc.length})`, "error");
 
-            // Spinner Loading
+            // Spinner
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="spinner"></span> Sedang Mengirim...';
             btn.disabled = true;
 
-            // Handle Upload (Simulasi URL)
+            // Upload Logic (Simulasi URL)
             let proofUrl = `https://picsum.photos/seed/${Date.now()}/200/200`;
             if(fileInput.files && fileInput.files[0]) {
-                // Di production, ini akan upload ke Supabase Storage
+                // Di production: Upload ke Supabase Storage
             }
 
             try {
@@ -821,7 +722,7 @@
                 $('sub-form').classList.add('hidden');
                 $('sub-desc').value = "";
                 
-                // --- KIRIM NOTIFIKASI WA ---
+                // Kirim WA
                 const text = `*PENGAJUAN BARU*%0A%0ANama: ${this.data.currentUser.Name}%0ATipe: ${type}%0ATgl: ${date}%0AIsi: ${desc}`;
                 window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${text}`, '_blank');
 
@@ -854,7 +755,7 @@
                             ${statusBadge}
                         </div>
                         <div style="font-weight:600; margin:4px 0; color:var(--text-main);">${row.type}</div>
-                        <div style="font-size:0.9rem; color:#555; line-height:1.4;">${row.description}</div>
+                        <div style="font-size:0.85rem; color:#555; line-height:1.4;">${row.description}</div>
                         ${row.status === 'Rejected' ? `<div style="color:red; font-size:0.8rem; margin-top:6px;">Alasan: ${row.reason}</div>` : ''}
                     </div>
                 `;
@@ -983,49 +884,6 @@
             `).join('');
         },
 
-        // --- 1. FUNGSI EDIT KARYAWAN (REAL) ---
-        openEditModal: async function(id) {
-            const users = await DB.getUsers();
-            const user = users.find(u => u.id_user == id);
-            if(!user) return;
-
-            $('user-modal-title').textContent = "Edit Karyawan";
-            $('old-id').value = user.id_user;
-            
-            // Isi Form
-            $('new-id').value = user.id_user;
-            $('new-id').readOnly = true; // ID tidak boleh diubah saat edit
-            $('new-name').value = user.name;
-            $('new-role').value = user.role;
-            $('new-workloc').value = user.work_location || "";
-            $('new-gpsmode').value = user.gps_mode || "bebas";
-            $('new-lat').value = user.target_lat || "";
-            $('new-lng').value = user.target_lng || "";
-            $('new-radius').value = user.radius || 100;
-            
-            this.toggleGpsInputs();
-            $('btn-save-user').onclick = () => app.saveEditUser();
-            $('user-modal').style.display = 'flex';
-        },
-
-        saveEditUser: async function() {
-            await DB.updateUser({
-                ID: $('new-id').value, 
-                Name: $('new-name').value, 
-                Role: $('new-role').value, 
-                WorkLocation: $('new-workloc').value, 
-                GPSMode: $('new-gpsmode').value,
-                TargetLat: $('new-lat').value, 
-                TargetLng: $('new-lng').value, 
-                Radius: $('new-radius').value
-            }, $('old-id').value);
-            
-            showToast("User Diupdate");
-            $('user-modal').style.display = 'none';
-            this.refreshData();
-        },
-
-        // --- ADMIN FUNCTIONS ---
         handleImport: function(input) {
             const file = input.files[0]; 
             if (!file) return;
@@ -1060,8 +918,7 @@
             const fName = $('filter-att-name').value.toLowerCase();
 
             const filtered = allAtt.filter(row => {
-                let matchDate = true;
-                let matchName = true;
+                let matchDate = true; let matchName = true;
                 if(fMonth) matchDate = row.timestamp.startsWith(fMonth);
                 if(fName) matchName = row.name.toLowerCase().includes(fName);
                 return matchDate && matchName;
@@ -1105,9 +962,9 @@
             }));
 
             const ws = XLSX.utils.json_to_sheet(exportData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Rekap Absen");
-            XLSX.writeFile(wb, `Rekap_Absensi_${fMonth || 'All'}.xlsx`);
+            const b = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(b, ws, "Rekap Absen");
+            XLSX.writeFile(b, `Rekap_Absensi_${fMonth || 'All'}.xlsx`);
             showToast("Excel didownload!");
         },
 
@@ -1126,6 +983,47 @@
 
             const pendingSubs = subs.filter(s => s.status === 'Pending').length;
             $('stat-sub').textContent = pendingSubs;
+        },
+
+        openEditModal: async function(id) {
+            const users = await DB.getUsers();
+            const user = users.find(u => u.id_user == id);
+            if(!user) return;
+
+            $('user-modal-title').textContent = "Edit Karyawan";
+            $('old-id').value = user.id_user;
+            
+            // Isi Form
+            $('new-id').value = user.id_user;
+            $('new-id').readOnly = true; 
+            $('new-name').value = user.name;
+            $('new-role').value = user.role;
+            $('new-workloc').value = user.work_location || "";
+            $('new-gpsmode').value = user.gps_mode || "bebas";
+            $('new-lat').value = user.target_lat || "";
+            $('new-lng').value = user.target_lng || "";
+            $('new-radius').value = user.radius || 100;
+            
+            this.toggleGpsInputs();
+            $('btn-save-user').onclick = () => app.saveEditUser();
+            $('user-modal').style.display = 'flex';
+        },
+
+        saveEditUser: async function() {
+            await DB.updateUser({
+                ID: $('new-id').value, 
+                Name: $('new-name').value, 
+                Role: $('new-role').value, 
+                WorkLocation: $('new-workloc').value, 
+                GPSMode: $('new-gpsmode').value,
+                TargetLat: $('new-lat').value, 
+                TargetLng: $('new-lng').value, 
+                Radius: $('new-radius').value
+            }, $('old-id').value);
+            
+            showToast("User Diupdate");
+            $('user-modal').style.display = 'none';
+            this.refreshData();
         },
 
         showAddUserModal: function() {
@@ -1248,4 +1146,3 @@
 </script>
 </body>
 </html>
-
