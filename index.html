@@ -314,7 +314,7 @@
                     </div>
                 </div>
 
-                <button onclick="app.login()" class="btn btn-primary" style="margin-top:24px; width:100%;">Masuk Aplikasi</button>
+               <button type="button" id="btn-login" class="btn btn-primary" style="margin-top:24px; width:100%;">Masuk Aplikasi</button>
                 
                 <div style="margin-top:20px; font-size:0.75rem; color:#999; background:#f1f5f9; padding:10px; border-radius:12px;">
                     <b>Info Demo (Supabase DB):</b><br>
@@ -791,6 +791,17 @@ const app = {
 
 // Jalankan aplikasi
 document.addEventListener('DOMContentLoaded', () => app.init());
+ // Menghubungkan tombol dengan fungsi login
+document.getElementById('btn-login').addEventListener('click', function() {
+    // Pastikan nama fungsi di bawah ini sesuai dengan nama fungsi login 
+    // yang kamu punya (biasanya bernama loginUser atau handleLogin)
+    if (typeof loginUser === "function") {
+        loginUser();
+    } else {
+        alert("Fungsi login tidak ditemukan di dalam script!");
+    }
+});             
 </script>
 </body>
 </html>
+
