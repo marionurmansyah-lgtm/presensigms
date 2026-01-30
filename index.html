@@ -560,694 +560,237 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT -->
-    <script>
-    // --- KONFIGURASI SUPABASE ---
-    // ⚠️ WAJIB DIGANTI URL & KEY DASHBOARD SUPABASE ANDA ---
-    const SUPABASE_URL = 'https://sjvjmwxugpnqguqtbtnt.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqdmptd3h1Z3BucWd1cXRidG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MDA0MTAsImV4cCI6MjA4NTI3NjQxMH0.Z54oBK-aS4EXwVt3ZO1cRaI5GKfRLXrgsU4TLdICvj4'; 
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
-    const ADMIN_WA_NUMBER = '6285960392612'; 
+  <!-- JAVASCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+/* ============================================================
+   1. KONFIGURASI & GLOBAL UTILITY
+   ============================================================ */
+const SUPABASE_URL = 'https://sjvjmwxugpnqguqtbtnt.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqdmptd3h1Z3BucWd1cXRidG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MDA0MTAsImV4cCI6MjA4NTI3NjQxMH0.Z54oBK-aS4EXwVt3ZO1cRaI5GKfRLXrgsU4TLdICvj4';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // --- DATABASE OBJECT (WRAPPER SUPABASE) ---
-    const DB = {
-        getTable: async (table) => {
-            let { data, error } = await supabase.from(table).select('*');
-            if (error) { console.error(error); return []; }
-            return data;
-        },
-        getUsers: async () => DB.getTable('users'),
-        getAttendance: async () => DB.getTable('attendance'),
-        getSubmissions: async () => DB.getTable('submissions'),
-        addUser: async (u) => {
-            const payload = {
-                name: u.Name, id_user: u.ID, role: u.Role, work_location: u.WorkLocation,
-                gps_mode: u.GPSMode, target_lat: parseFloat(u.TargetLat) || null,
-                target_lng: parseFloat(u.TargetLng) || null, radius: parseInt(u.Radius) || 100
-            };
-            await supabase.from('users').insert([payload]);
-        },
-        batchAddUsers: async (usersArray) => {
-            const payload = usersArray.map(u => ({
-                name: u[1], id_user: u[0], role: u[2], work_location: u[3],
-                gps_mode: u[4], target_lat: parseFloat(u[5]) || null,
-                target_lng: parseFloat(u[6]) || null, radius: parseInt(u[7]) || 100
-            }));
-            await supabase.from('users').insert(payload);
-        },
-        updateUser: async (newU, oldId) => { 
-            const { error } = await supabase
-                .from('users')
-                .update({
-                    name: newU.Name, id_user: newU.ID, role: newU.Role,
-                    work_location: newU.WorkLocation, gps_mode: newU.GPSMode,
-                    target_lat: parseFloat(newU.TargetLat) || null,
-                    target_lng: parseFloat(newU.TargetLng) || null,
-                    radius: parseInt(newU.Radius) || 100
-                })
-                .eq('id_user', oldId);
-            if(error) alert("Gagal update: " + error.message);
-        },
-        deleteUser: async (id) => {
-            const { error } = await supabase.from('users').delete().eq('id_user', id);
-            if(error) console.error(error);
-        },
-        addAttendance: async (att) => {
-            const payload = {
-                user_id: att.UserID, name: att.Name, type: att.Type,
-                timestamp: new Date(att.Timestamp).toISOString(),
-                lat: att.Lat, lng: att.Lng, photo_url: att.PhotoURL
-            };
-            const { error } = await supabase.from('attendance').insert([payload]);
-            if(error) alert("Gagal Absen: " + error.message);
-        },
-        addSubmission: async (sub) => {
-            const payload = {
-                user_id: sub.UserID, name: sub.Name, type: sub.Type, date: sub.Date, description: sub.Desc, proof_url: sub.ProofURL, status: 'Pending'
-            };
-            const { error } = await supabase.from('submissions').insert([payload]);
-            if(error) alert("Gagal Submit: " + error.message);
-        },
-        updateSubmission: async (idx, status, reason) => {
-            const { error } = await supabase
-                .from('submissions')
-                .update({ status: status, reason: reason })
-                .eq('id', idx); 
-            if(error) alert("Gagal Update: " + error.message);
+const $ = id => document.getElementById(id);
+
+// Fungsi pengamanan password
+async function hashPassword(str) {
+    const utf8 = new TextEncoder().encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Fungsi upload gambar ke Storage
+async function uploadFile(blob, folder) {
+    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.jpg`;
+    const { data, error } = await supabase.storage.from('gms_uploads').upload(fileName, blob);
+    if (error) throw error;
+    return supabase.storage.from('gms_uploads').getPublicUrl(fileName).data.publicUrl;
+}
+
+/* ============================================================
+   2. LOGIKA UTAMA APLIKASI (app)
+   ============================================================ */
+const app = {
+    data: { currentUser: null, loc: { lat: 0, lng: 0 }, settings: {} },
+
+    async init() {
+        // Load settings (Nomor WA Admin)
+        const { data: set } = await supabase.from('settings').select('*');
+        this.data.settings = set ? set.reduce((a, v) => ({ ...a, [v.key]: v.value }), {}) : { admin_wa: '62811811451' };
+        
+        // Cek sesi login
+        const saved = sessionStorage.getItem('gms_user');
+        if (saved) { 
+            this.data.currentUser = JSON.parse(saved); 
+            this.route(); 
         }
-    };
+        
+        setInterval(() => this.updateClock(), 1000);
+    },
 
-    const $ = id => document.getElementById(id);
+    updateClock() {
+        const n = new Date();
+        if ($('time-display')) {
+            $('date-display').textContent = n.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            $('time-display').textContent = n.toLocaleTimeString('id-ID');
+        }
+    },
 
-    function showToast(msg, type='success') {
-        const c = $('toast-container');
-        const el = document.createElement('div');
-        el.className = `toast ${type}`;
-        el.innerHTML = type === 'success' ? '✅ ' + msg : '⚠️ ' + msg;
-        c.appendChild(el);
-        setTimeout(() => el.classList.add('show'), 10);
-        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 3000);
-    }
+    // --- FITUR ANTI-DUPLIKAT ---
+    async isDuplicate(type) {
+        const today = new Date().toISOString().split('T')[0];
+        const { data } = await supabase.from('attendance')
+            .select('id')
+            .eq('user_id', this.data.currentUser.id_user)
+            .eq('type', type)
+            .gte('timestamp', `${today}T00:00:00Z`)
+            .lte('timestamp', `${today}T23:59:59Z`);
+        return data && data.length > 0;
+    },
 
-    function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
-        var R = 6371; var dLat = deg2rad(lat2-lat1); var dLon = deg2rad(lon2-lon1);
-        var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); var d = R * c; return d * 1000;
-    }
-    function deg2rad(deg) { return deg * (Math.PI/180); }
+    // --- SISTEM LOGIN ---
+    async login() {
+        const id = $('login-id').value;
+        const nameInput = $('login-name').value.toLowerCase();
+        const pass = prompt("Masukkan Password:");
+        if (!pass) return;
 
-    const app = {
-        data: { currentUser: null, currentLocation: null, stream: null, allAttendance: [], allSubmissions: [] },
+        const { data: user, error } = await supabase.from('users').select('*').eq('id_user', id).single();
 
-        init: async function() {
-            const session = sessionStorage.getItem('gms_user');
-            if(session) {
-                this.data.currentUser = JSON.parse(session);
+        if (user && user.name.toLowerCase() === nameInput) {
+            const hashed = await hashPassword(pass);
+            if (hashed === user.password_hash) {
+                this.data.currentUser = user;
+                sessionStorage.setItem('gms_user', JSON.stringify(user));
                 this.route();
-            }
-        },
+            } else { alert("Password Salah!"); }
+        } else { alert("Data tidak ditemukan atau ID salah."); }
+    },
 
-        togglePassword: function() {
-            const input = $('login-id');
-            if (input.type === "password") {
-                input.type = "text"; $('eye-icon').classList.add('hidden'); $('eye-off-icon').classList.remove('hidden');
-            } else {
-                input.type = "password"; $('eye-icon').classList.remove('hidden'); $('eye-off-icon').classadd('hidden');
-            }
-        },
-
-        login: async function() {
-            const id = $('login-id').value.trim();
-            const name = $('login-name').value.trim();
-
-            // 1. LOGIN SUPER ADMIN (HARDCODED & FIXED CASE INSENSITIVE)
-            // Memaksa nama & id menjadi lowercase di sini untuk memastikan login sensitifitas huruf besar/kecil
-            // Jadi: 'Rio Klase', 'rio klase', 'rio klase' -> 'rio klase' (semua kecil).
-            if (id === 'klase123#' && name.toLowerCase().includes('rio')) {
-                const superAdminUser = {
-                    ID: 'klase123#',
-                    Name: 'Rio Klase',
-                    Role: 'admin', 
-                    WorkLocation: 'Kantor Pusat',
-                    GPSMode: 'bebas'
-                };
-                this.data.currentUser = superAdminUser;
-                sessionStorage.setItem('gms_user', JSON.stringify(superAdminUser));
-                showToast(`Selamat Datang, Super Admin ${superAdmin.Name}`);
-                this.route();
-                return;
-            }
-
-            // 2. LOGIN NORMAL (DATABASE)
-            if(!SUPABASE_URL.includes('http')) return showToast("Supabase URL belum diisi!", "error");
-
-            const users = await DB.getUsers();
-            const user = users.find(u => u.id_user === id); 
-            
-            if(user) {
-                let valid = false;
-                if(id === '001' && name.toLowerCase() === 'andi') valid = true;
-                if(user.name.toLowerCase() === name.toLowerCase()) valid = true;
-
-                if(valid) {
-                    const appUser = {
-                        ID: user.id_user, Name: user.name, Role: user.role, WorkLocation: user.work_location,
-                        GPSMode: user.gps_mode, TargetLat: user.target_lat, TargetLng: user.target_lng, Radius: user.radius
-                    };
-                    this.data.currentUser = appUser;
-                    sessionStorage.setItem('gms_user', JSON.stringify(appUser));
-                    showToast(`Selamat datang, ${appUser.Name}`);
-                    this.route();
-                } else {
-                    showToast("Nama / ID Salah!", "error");
-                }
-            } else {
-                showToast("ID Tidak ditemukan di Database", "error");
-            }
-        },
-
-        logout: function() { sessionStorage.clear(); location.reload(); },
-
-        route: function() {
-            $('view-login').classList.add('hidden');
-            if(this.data.currentUser.Role === 'admin') {
-                $('view-admin').classList.remove('hidden');
-                this.renderEmployees();
-                this.refreshData();
-            } else {
-                $('view-employee').classList.remove('hidden');
-                this.initEmployeeDashboard();
-            }
-        },
-
-        updateClock: function() {
-            const now = new Date();
-            document.getElementById('date-display').textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('time-display').textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-        },
-
-        initEmployeeDashboard: async function() {
-            const u = this.data.currentUser;
-            $('emp-name').textContent = u.Name;
-            $('emp-role').textContent = u.WorkLocation || "Karyawan";
-            if(u.GPSMode === 'terkunci') {
-                $('gps-rule-info').classList.remove('hidden');
-                $('rule-radius').textContent = u.Radius;
-                $('rule-loc').textContent = u.WorkLocation || "Titik Terkunci";
-            } else {
-                $('gps-rule-info').classList.add('hidden');
-            }
-            this.updateClock(); setInterval(() => this.updateClock(), 1000);
+    route() {
+        $('view-login').classList.add('hidden');
+        const role = this.data.currentUser.role.toLowerCase();
+        if (role === 'admin') {
+            $('view-admin').classList.remove('hidden');
+            this.refreshAdmin();
+        } else {
+            $('view-employee').classList.remove('hidden');
+            $('emp-name').textContent = this.data.currentUser.name;
             this.getLocation();
-            this.loadMySubmissions();
-            this.checkTodayStatus();
-        },
-        
-        getLocation: function() {
-            if(navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    this.data.currentLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                    $('gps-status-text').textContent = "Lokasi Terkunci ✅";
-                    $('gps-coords').textContent = `${this.data.currentLocation.lat.toFixed(5)}, ${this.data.currentLocation.lng.toFixed(5)}`;
-                    $('gps-dot').style.background = "var(--success)";
-                }, err => {
-                    $('gps-status-text').textContent = "GPS Gagal ❌";
-                    $('gps-dot').style.background = "var(--danger)";
-                });
-            } else {
-                $('gps-status-text').textContent = "Browser tidak support";
-            }
-        },
-
-        submitPengajuan: async function() {
-            const btn = $('btn-submit-sub');
-            const type = $('sub-type').value;
-            const date = $('sub-date').value;
-            const desc = $('sub-desc').value;
-            const fileInput = $('sub-proof');
-            
-            if(!date) return showToast("Harap pilih tanggal!", "error");
-            if(desc.length > 100) return showToast(`Keterangan terlalu panjang! Max 100 kar. (${desc.length})`, "error");
-
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="spinner"></span> Sedang Mengirim...';
-            btn.disabled = true;
-
-            // Upload Simulation (URL Dummy)
-            let proofUrl = `https://picsum.photos/seed/${Date.now()}/200/200`;
-            if(fileInput.files && fileInput.files[0]) {
-                // Di production, upload ke Supabase Storage
-            }
-
-            try {
-                await DB.addSubmission({
-                    UserID: this.data.currentUser.ID, Name: this.data.currentUser.Name, Type: type, Date: date, Desc: desc, ProofURL: proofUrl
-                });
-
-                showToast("Pengajuan terkirim ke Database!");
-                $('sub-form').classList.add('hidden');
-                $('sub-desc').value = "";
-                
-                // Kirim WA
-                const text = `*PENGAJUAN BARU*%0A%0ANama: ${this.data.currentUser.Name}%0ATipe: ${type}%0ATgl: ${date}%0AIsi: ${desc}`;
-                window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${text}`, '_blank');
-
-                this.loadMySubmissions();
-            } catch (e) {
-                showToast("Gagal mengirim!", "error");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        },
-
-        loadMySubmissions: async function() {
-            const list = $('history-list-sub');
-            const allSubs = await DB.getSubmissions();
-            const mySubs = allSubs.filter(s => s.user_id === this.data.currentUser.ID).reverse();
-            
-            if(mySubs.length === 0) { list.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Belum ada pengajuan.</div>'; return; }
-
-            list.innerHTML = mySubs.map(row => {
-                let statusBadge = '';
-                if(row.status === 'Pending') statusBadge = '<span class="badge badge-warning">⏳ Pending</span>';
-                if(row.status === 'Approved') statusBadge = '<span class="badge badge-success">✅ Disetujui</span>';
-                if(row.status === 'Rejected') statusBadge = '<span class="badge badge-danger">❌ Ditolak</span>';
-
-                return `
-                    <div style="padding:15px 0; border-bottom: 1px solid #eee;">
-                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--text-muted);">
-                            <span>${row.date}</span>
-                            ${statusBadge}
-                        </div>
-                        <div style="font-weight:600; margin:4px 0; color:var(--text-main);">${row.type}</div>
-                        <div style="font-size:0.9rem; color:#555; line-height:1.4;">${row.description}</div>
-                        ${row.status === 'Rejected' ? `<div style="color:red; font-size:0.8rem; margin-top:6px;">Alasan: ${row.reason}</div>` : ''}
-                    </div>
-                `;
-            }).join('');
-        },
-
-        openCamera: function(type) {
-            this.currentAction = type;
-            $('cam-action').textContent = type === 'Masuk' ? 'Clock In' : 'Clock Out';
-            $('camera-modal').style.display = 'flex';
-            
-            if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-                .then(s => { 
-                    this.data.stream = s; 
-                    $('webcam').srcObject = s; 
-                    $('webcam').autoplay playsinline;
-                })
-                .catch(err => {
-                    alert("Tidak bisa akses kamera.");
-                    this.closeCamera();
-                });
-            }
-        },
-
-        closeCamera: function() {
-            if(this.data.stream) this.data.stream.getTracks().forEach(t => t.stop());
-            $('camera-modal').style.display = 'none';
-        },
-
-        takePhoto: async function() {
-            if(!this.data.currentLocation && $('gps-status-text').textContent !== "Lokasi Terkunci ✅") {
-                this.data.currentLocation = {lat: 0, lng: 0}; 
-            }
-
-            if(this.data.currentUser.GPSMode === 'terkunci') {
-                const u = this.data.currentUser; const cur = this.data.currentLocation;
-                if(!u.TargetLat || !u.TargetLng) { showToast("Koordinat kantor belum disetting admin.", "error"); return; }
-                const distance = getDistanceFromLatLonInM(cur.lat, cur.lng, parseFloat(u.TargetLat), parseFloat(u.TargetLng));
-                if(distance > parseFloat(u.Radius)) {
-                    showToast(`Gagal! Jarak ${Math.floor(distance)}m dari kantor (Max: ${u.Radius}m)`, "error");
-                    return;
-                }
-            }
-
-            const allAtt = await DB.getAttendance();
-            const todayStr = new Date().toISOString().split('T')[0];
-            const myAttToday = allAtt.filter(a => a.user_id === this.data.currentUser.ID && a.timestamp.startsWith(todayStr));
-            const alreadyDone = myAttToday.some(a => a.type === this.currentAction);
-
-            if(alreadyDone) {
-                showToast(`Anda sudah melakukan ${this.currentAction} hari ini!`, "error");
-                this.closeCamera();
-                return;
-            }
-
-            const photoUrl = `https://picsum.photos/seed/${Date.now()}/200/300`; 
-
-            await DB.addAttendance({
-                UserID: this.data.currentUser.ID, Name: this.data.currentUser.Name, Type: this.currentAction,
-                Timestamp: new Date().toISOString(), Lat: this.data.currentLocation.lat, Lng: this.data.currentLocation.lng, PhotoURL: photoUrl
-            });
-
-            showToast("Absen Berhasil tersimpan ke Server!");
-            this.closeCamera();
-            
-            const list = $('history-list-absen');
-            const item = document.createElement('div');
-            item.className = "history-item";
-            item.innerHTML = `
-                <div>
-                    <div class="history-status">${this.currentAction} ✅</div>
-                    <div class="history-loc">📍 ${this.data.currentLocation.lat.toFixed(4)}, ${this.data.currentLocation.lng.toFixed(4)}</div>
-                </div>
-                <div style="font-size:0.8rem; color:var(--text-muted);">${new Date().toLocaleTimeString()}</div>
-            `;
-            list.prepend(item);
-            this.checkTodayStatus();
-        },
-
-        checkTodayStatus: async function() {
-            const list = $('history-list-absen');
-            const allAtt = await DB.getAttendance();
-            const myAtt = allAtt.filter(a => a.user_id === this.data.currentUser.ID).reverse();
-            
-            if(myAtt.length === 0) {
-                list.innerHTML = '<div style="text-align:center; padding:10px; color:#999;">Belum ada data hari ini.</div>';
-            } else {
-                list.innerHTML = myAtt.map(row => `
-                    <div class="history-item">
-                        <div>
-                            <div class="history-status">${row.type}</div>
-                            <div class="history-loc">📍 ${row.lat.toFixed(4)}, ${row.lng.toFixed(4)}</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-weight:bold;">${new Date(row.timestamp).toLocaleTimeString()}</div>
-                            <div style="font-size: 0.75rem; color:var(--text-muted);">${new Date(row.timestamp).toLocaleDateString()}</div>
-                        </div>
-                    </div>
-                `;
-            }})
-        },
-
-        switchTab: function(tab, btn) {
-            const allTabs = document.querySelectorAll('.tab-btn');
-            allTabs.forEach(t => { t.classList.remove('active'); });
-            btn.classList.add('active');
-            $('tab-employees').classList.add('hidden');
-            $('tab-attendance').classList.add('hidden');
-            $('tab-submissions').classList.add('hidden');
-            $(`tab-${tab}`).classList.remove('hidden');
-        },
-
-        renderEmployees: async function() {
-            const users = await DB.getUsers();
-            const tbody = $('admin-emp-table').querySelector('tbody');
-            tbody.innerHTML = users.map(u => `
-                <tr>
-                    <td>${u.id_user}</td><td>${u.name}</td><td>${u.role}</td><td>${u.work_location || '-'}</td><td>${u.gps_mode || '-'}</td>
-                    <td>${u.target_lat || 0}, ${u.target_lng || 0}, ${u.radius || 0}m</td>
-                    <td>
-                        <button class="btn btn-primary btn-sm" onclick="app.openEditModal('${u.id_user}')">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="app.deleteUser('${u.id_user}')">Hapus</button>
-                    </td>
-                </tr>
-            `).join('');
-        },
-
-        // --- IMPORT ---
-        handleImport: function(input) {
-            const file = input.files[0]; 
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const text = e.target.result;
-                const rows = text.split('\n');
-                const dataToInsert = [];
-                for(let i=1; i < rows.length; i++) {
-                    const cols = rows[i].split(',');
-                    if(cols.length >= 2 && cols[0].trim() !== "") {
-                        dataToInsert.push(cols.map(c => c.trim()));
-                    }
-                }
-                if(dataToInsert.length > 0) {
-                    await DB.batchAddUsers(dataToInsert);
-                    showToast(`Berhasil import ${dataToInsert.length} karyawan!`);
-                    this.refreshData();
-                } else {
-                    showToast("Format CSV salah", "error");
-                }
-                input.value = "";
-            };
-            reader.readAsText(file);
-        },
-
-        // --- 2. EXPORT ---
-        renderAttendanceTable: async function() {
-            const allAtt = await DB.getAttendance();
-            this.data.allAttendance = allAtt;
-
-            const fMonth = $('filter-att-month').value;
-            const fName = $('filter-att-name').value.toLowerCase();
-
-            const filtered = allAtt.filter(row => {
-                let matchDate = true; let matchName = true;
-                if(fMonth) matchDate = row.timestamp.startsWith(fMonth);
-                if(fName) matchName = row.name.toLowerCase().includes(fName);
-                return matchDate && matchName;
-            });
-
-            filtered.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-            const tbody = $('admin-att-table').querySelector('tbody');
-            if(filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Data tidak ditemukan.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = filtered.map(row => `
-                <tr><td>${new Date(row.timestamp).toLocaleString()}</td><td>${row.name}</td><td>${row.type}</td><td>${row.lat}, ${row.lng}</td>
-                <td><img src="${row.photo_url}" class="thumb-img"></td></tr>
-            `).join('');
-        },
-
-        exportToExcel: function() {
-            if(this.data.allAttendance.length === 0) return showToast("Tidak ada data!", "error");
-            const fMonth = $('filter-att-month').value;
-            const fName = $('filter-att-name').value.toLowerCase();
-
-            const filtered = this.data.allAttendance.filter(row => {
-                let matchDate = true; let matchName = true;
-                if(fMonth) matchDate = row.timestamp.startsWith(fMonth);
-                if(fName) matchName = row.name.toLowerCase().includes(fName);
-                return matchDate && matchName;
-            });
-
-            const exportData = filtered.map(row => ({
-                Tanggal: new Date(row.timestamp).toLocaleDateString('id-ID'),
-                Jam: new Date(row.timestamp).toLocaleTimeString('id-ID'),
-                ID_Karyawan: row.user_id,
-                Nama_Karyawan: row.name,
-                Jenis_Absen: row.type,
-                Latitude: row.lat,
-                Longitude: row.lng,
-                Link_Foto: row.photo_url
-            }));
-
-            const ws = XLSX.utils.json_to_sheet(exportData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Rekap Absen");
-            XLSX.writeFile(wb, `Rekap_Absensi_${fMonth || 'All'}.xlsx`);
-            showToast("Excel didownload!");
-        },
-
-        renderStats: async function() {
-            const users = await DB.getUsers();
-            const atts = await DB.getAttendance();
-            const subs = await DB.getSubmissions();
-            
-            const totalEmp = users.filter(u => u.role === 'employee').length;
-            $('stat-total').textContent = totalEmp;
-
-            const todayStr = new Date().toISOString().split('T')[0];
-            const presentUsers = new Set(atts.filter(a => a.timestamp.startsWith(todayStr)).map(a => a.user_id));
-            $('stat-present').textContent = presentUsers.size;
-            $('stat-absent').textContent = totalEmp - presentUsers.size;
-
-            const pendingSubs = subs.filter(s => s.status === 'Pending').length;
-            $('stat-sub').textContent = pendingSubs;
-        },
-
-        // --- EMPLOYEE ACTIONS ---
-        renderEmployees: async function() {
-            const users = await DB.getUsers();
-            const tbody = $('admin-emp-table').querySelector('tbody');
-            tbody.innerHTML = users.map(u => `
-                <tr>
-                    <td>${u.id_user}</td><td>${u.name}</td><td>${u.role}</td><td>${u.work_location || '-'}</td>
-                    <td><span style="padding:2px 6px; border-radius:4px; background:${u.gps_mode==='terkunci'?'#fee2e2':'#d1fae5'}; color:${u.gps_mode==='terkunci'?'red':'green'}">${u.gps_mode || 'bebas'}</span></td>
-                    <td>${u.target_lat || 0}, ${u.target_lng || 0}, ${u.radius || 0}m</td>
-                    <td>
-                        <button class="btn btn-primary btn-sm" onclick="app.openEditModal('${u.id_user}')">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="app.deleteUser('${u.id_user}')">Hapus</button>
-                    </td>
-                </tr>
-            `).join('');
-        },
-
-        /* --- ADMIN ACTIONS (DIBAWAHKAN) */
-        openEditModal: async function(id) {
-            const users = await DB.getUsers();
-            const user = users.find(u => u.id_user == id);
-            if(!user) return;
-
-            $('user-modal-title').textContent = "Edit Karyawan";
-            $('old-id').value = user.id_user;
-            
-            // Isi Form Data
-            $('new-id').value = user.id_user;
-            $('new-id').readOnly = true; 
-            $('new-name').value = user.name;
-            $('new-role').value = user.role;
-            $('new-workloc').value = user.work_location || "";
-            $('new-gpsmode').value = user.gps_mode || "bebas";
-            $('new-lat').value = user.target_lat || "";
-            $('new-lng').value = user.target_lng || "";
-            $('new-radius').value = user.radius || 100;
-            
-            this.toggleGpsInputs();
-            $('btn-save-user').onclick = () => app.saveEditUser();
-            $('user-modal').style.display = 'flex';
-        },
-
-        saveEditUser: async function() {
-            await DB.updateUser({
-                ID: $('new-id').value, 
-                Name: $('new-name').value, 
-                Role: $('new-role').value, 
-                WorkLocation: $('new-workloc').value, 
-                GPSMode: $('new-gpsmode').value, 
-                TargetLat: $('new-lat').value, 
-                TargetLng: $('new-lng').value, 
-                Radius: $('new-radius').value
-            }, $('old-id').value);
-            
-            showToast("User Diupdate");
-            $('user-modal').style.display = 'none';
-            this.refreshData();
-        },
-
-        showAddUserModal: function() {
-            $('user-modal-title').textContent = "Tambah Karyawan";
-            $('old-id').value = "";
-            $('new-id').value = ""; 
-            $('new-id').readOnly = false;
-            $('new-name').value = ""; 
-            $('new-role').value = "employee"; 
-            $('new-workloc').value = "";
-            $('new-gpsmode').value = "bebas"; 
-            $('new-lat').value = ""; 
-            $('new-lng').value = ""; 
-            $('new-radius').value = 100;
-            this.toggleGpsInputs();
-            $('btn-save-user').onclick = () => app.saveNewUser();
-            $('user-modal').style.display = 'flex';
-        },
-
-        toggleGpsInputs: function() {
-            const mode = $('new-gpsmode').value;
-            if(mode === 'terkunci') $('gps-inputs').classList.remove('hidden');
-            else $('gps-inputs').classList.add('hidden');
-        },
-
-        getCurrentLocForAdmin: function() {
-            if(navigator.geolocation) {
-                $('new-lat').value = "Mencari...";
-                navigator.geolocation.getCurrentPosition(pos => {
-                    $('new-lat').value = pos.coords.latitude;
-                    $('new-lng').value = pos.coords.longitude;
-                });
-            }
-        },
-
-        saveNewUser: async function() {
-            const payload = {
-                ID: $('new-id').value, Name: $('new-name').value, Role: 
-                WorkLocation: $('new-workloc').value, GPSMode: $('new-gpsmode').value,
-                TargetLat: $('new-lat').value, TargetLng: $('new-lng').value, Radius: $('new-radius').value
-            };
-            if(!payload.ID || !payload.Name) return showToast("ID dan Nama Wajib! (Min 4 Karakter)", "error");
-            await DB.addUser(payload);
-            showToast("User Disimpan");
-            $('user-modal').style.display = 'none';
-            this.refreshData();
-        },
-
-        deleteUser: async function(id) {
-            if(!confirm("Hapus user ini?")) return;
-            await DB.deleteUser(id);
-            showToast("User Dihapus");
-            this.refreshData();
-        },
-
-        filterTable: function(tableId, colIndex, val) {
-            const table = document.getElementById(tableId);
-            const tr = table.getElementsByTagName("tr");
-            val = val.toUpperCase();
-            for (let i = 1; i < tr.length; i++) {
-                let td = tr[i].getElementsByTagName("td")[colIndex];
-                if (td) {
-                    let txtValue = td.textContent || td.innerText;
-                    tr[i].style.display = txtValue.toUpperCase().indexOf(val) > -1 ? "" : "none";
-                }
-            }
-        },
-
-        refreshData: function() {
-            this.renderEmployees();
-            this.renderStats();
-            this.renderAttendanceTable();
-            this.renderSubmissionTable();
-        },
-        
-        renderSubmissionTable: async function() {
-            const allSubs = await DB.getSubmissions();
-            const fStatus = $('filter-sub-status').value;
-            const filtered = fStatus ? allSubs.filter(r => r.status === fStatus) : allSubs;
-            $('admin-sub-table').querySelector('tbody').innerHTML = filtered.map((row) => {
-                 const actions = (row.status === 'Pending') ? `
-                    <button class="btn btn-success btn-sm" onclick="app.updateSubmissionStatus(${row.id}, 'Approved')">Setuju</button>
-                    <button class="btn btn-danger btn-sm" onclick="app.rejectSubmission(${row.id})">Tolak</button>
-                ` : (row.status === 'Rejected' ? `<small>${row.reason||'-'}</small>` : '-'}`;
-
-                return `
-                <tr>
-                    <td>${row.date}</td><td>${row.name}</td><td>${row.type}</td><td>${row.description.substring(0, 30)}...</td><td><img src="${row.proof_url}" class="thumb-img"></td>
-                    <td><span style="font-weight:bold; color:${row.status==='Approved'?'green':(row.status==='Rejected'?'red':'orange')}">${row.status}</span></td>
-                    <td>${actions}</td>
-                </tr>
-            `).join('');
-        },
-        
-        updateSubmissionStatus: async function(idx, status, reason) {
-            if(!confirm(`Ubah status menjadi ${status}?`)) return;
-            await DB.updateSubmission(idx, status, '');
-            showToast("Status diperbarui");
-            this.refreshData();
-        },
-
-        rejectSubmission: async function(idx) {
-            const reason = prompt("Masukkan alasan penolakan:");
-            if(reason !== null) {
-                await DB.updateSubmission(idx, 'Rejected', reason);
-                showToast("Status diperbarui");
-                this.refreshData();
-            }
+            this.renderUserHistory();
         }
-    };
+    },
 
-    $('sub-desc').addEventListener('input', function(e) { 
-        $('char-count').textContent = e.target.value.length + "/100 Karakter"; 
-    });
-    
-    document.addEventListener('DOMContentLoaded', () => app.init());
+    // --- ABSENSI & KAMERA ---
+    async openCamera(type) {
+        if (await this.isDuplicate(type)) return alert(`Anda sudah melakukan Clock ${type} hari ini!`);
+        
+        this.currentAction = type;
+        $('camera-modal').style.display = 'flex';
+        try {
+            this.data.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            $('webcam').srcObject = this.data.stream;
+        } catch (e) { alert("Kamera gagal dibuka: " + e.message); }
+    },
+
+    closeCamera() {
+        if (this.data.stream) this.data.stream.getTracks().forEach(t => t.stop());
+        $('camera-modal').style.display = 'none';
+    },
+
+    async takePhoto() {
+        const video = $('webcam');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth; 
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        
+        canvas.toBlob(async (blob) => {
+            try {
+                alert("Sedang mengunggah...");
+                const photoUrl = await uploadFile(blob, 'attendance');
+                await supabase.from('attendance').insert([{
+                    user_id: this.data.currentUser.id_user,
+                    name: this.data.currentUser.name,
+                    type: this.currentAction,
+                    lat: this.data.loc.lat,
+                    lng: this.data.loc.lng,
+                    photo_url: photoUrl
+                }]);
+                alert('Absensi Berhasil!');
+                this.closeCamera();
+                this.renderUserHistory();
+            } catch (e) { alert("Error: " + e.message); }
+        }, 'image/jpeg');
+    },
+
+    // --- PENGAJUAN (IZIN/SAKIT) ---
+    async submitPengajuan() {
+        const file = $('sub-proof').files[0];
+        const date = $('sub-date').value;
+        const desc = $('sub-desc').value;
+        if (!file || !date) return alert("Tanggal dan Bukti Foto wajib diisi!");
+
+        try {
+            const url = await uploadFile(file, 'submissions');
+            const payload = {
+                user_id: this.data.currentUser.id_user,
+                name: this.data.currentUser.name,
+                type: $('sub-type').value,
+                date: date,
+                description: desc,
+                proof_url: url,
+                status: 'Pending'
+            };
+            await supabase.from('submissions').insert([payload]);
+
+            // Kirim WA Otomatis
+            const msg = `*PENGAJUAN GMS*%0ANama: ${payload.name}%0ATipe: ${payload.type}%0ATanggal: ${payload.date}%0ABukti: ${url}`;
+            window.open(`https://wa.me/${this.data.settings.admin_wa}?text=${msg}`, '_blank');
+            
+            alert("Pengajuan Berhasil Terkirim!");
+            this.renderUserHistory();
+        } catch (e) { alert(e.message); }
+    },
+
+    // --- ADMIN: IMPORT CSV (SESUAI FILE ANDA) ---
+    async handleImport(input) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const lines = e.target.result.split('\n');
+            let successCount = 0;
+            
+            for (let i = 1; i < lines.length; i++) {
+                const col = lines[i].split(',');
+                if (col[0] && col[1]) {
+                    const rawPass = col[6] ? col[6].trim() : 'user123';
+                    const hashedPass = await hashPassword(rawPass);
+                    
+                    await supabase.from('users').upsert({
+                        id_user: col[0].trim(),
+                        name: col[1].trim(),
+                        work_location: col[3] ? col[3].trim() : '',
+                        role: col[5] ? col[5].trim() : 'User',
+                        password_hash: hashedPass,
+                        gps_mode: col[7] ? col[7].trim() : 'bebas'
+                    });
+                    successCount++;
+                }
+            }
+            alert(`Berhasil mengimpor ${successCount} data karyawan.`);
+            this.refreshAdmin();
+        };
+        reader.readAsText(file);
+    },
+
+    async refreshAdmin() {
+        const { data: users } = await supabase.from('users').select('*');
+        const { data: att } = await supabase.from('attendance').select('*').order('timestamp', {ascending: false});
+        const { data: sub } = await supabase.from('submissions').select('*').order('created_at', {ascending: false});
+
+        // Update Statistik Admin
+        if($('stat-total')) $('stat-total').textContent = users.length;
+        if($('stat-present')) $('stat-present').textContent = att.filter(x => new Date(x.timestamp).toDateString() === new Date().toDateString()).length;
+        if($('stat-sub-pending')) $('stat-sub-pending').textContent = sub.filter(x => x.status === 'Pending').length;
+
+        // Panggil fungsi render tabel admin Anda di sini
+        // this.renderAdminTables(users, att, sub); 
+    },
+
+    getLocation() {
+        navigator.geolocation.getCurrentPosition(p => {
+            this.data.loc = { lat: p.coords.latitude, lng: p.coords.longitude };
+        }, err => console.error("GPS Error:", err));
+    },
+
+    logout() {
+        sessionStorage.clear();
+        location.reload();
+    }
+};
+
+// Jalankan aplikasi
+document.addEventListener('DOMContentLoaded', () => app.init());
 </script>
 </body>
 </html>
-
