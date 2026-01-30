@@ -564,261 +564,90 @@
 
   <!-- JAVASCRIPT -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-/* ============================================================
-   1. KONFIGURASI & GLOBAL UTILITY
-   ============================================================ */
-const SUPABASE_URL = 'https://sjvjmwxugpnqguqtbtnt.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqdmptd3h1Z3BucWd1cXRidG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MDA0MTAsImV4cCI6MjA4NTI3NjQxMH0.Z54oBK-aS4EXwVt3ZO1cRaI5GKfRLXrgsU4TLdICvj4';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<script>
+    // 1. KONEKSI SUPABASE (Pastikan URL & Key Anda Benar!)
+    const supabaseUrl = 'https://sjvjmwxugpnqguqtbtnt.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqdmptd3h1Z3BucWd1cXRidG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MDA0MTAsImV4cCI6MjA4NTI3NjQxMH0.Z54oBK-aS4EXwVt3ZO1cRaI5GKfRLXrgsU4TLdICvj4';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-const $ = id => document.getElementById(id);
-
-// Fungsi pengamanan password
-async function hashPassword(str) {
-    const utf8 = new TextEncoder().encode(str);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
-    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-// Fungsi upload gambar ke Storage
-async function uploadFile(blob, folder) {
-    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.jpg`;
-    const { data, error } = await supabase.storage.from('gms_uploads').upload(fileName, blob);
-    if (error) throw error;
-    return supabase.storage.from('gms_uploads').getPublicUrl(fileName).data.publicUrl;
-}
-
-/* ============================================================
-   2. LOGIKA UTAMA APLIKASI (app)
-   ============================================================ */
-const app = {
-    data: { currentUser: null, loc: { lat: 0, lng: 0 }, settings: {} },
-
-    async init() {
-        // Load settings (Nomor WA Admin)
-        const { data: set } = await supabase.from('settings').select('*');
-        this.data.settings = set ? set.reduce((a, v) => ({ ...a, [v.key]: v.value }), {}) : { admin_wa: '62811811451' };
-        
-        // Cek sesi login
-        const saved = sessionStorage.getItem('gms_user');
-        if (saved) { 
-            this.data.currentUser = JSON.parse(saved); 
-            this.route(); 
-        }
-        
-        setInterval(() => this.updateClock(), 1000);
-    },
-
-    updateClock() {
-        const n = new Date();
-        if ($('time-display')) {
-            $('date-display').textContent = n.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            $('time-display').textContent = n.toLocaleTimeString('id-ID');
-        }
-    },
-
-    // --- FITUR ANTI-DUPLIKAT ---
-    async isDuplicate(type) {
-        const today = new Date().toISOString().split('T')[0];
-        const { data } = await supabase.from('attendance')
-            .select('id')
-            .eq('user_id', this.data.currentUser.id_user)
-            .eq('type', type)
-            .gte('timestamp', `${today}T00:00:00Z`)
-            .lte('timestamp', `${today}T23:59:59Z`);
-        return data && data.length > 0;
-    },
-
-    // --- SISTEM LOGIN ---
-    async login() {
-        const id = $('login-id').value;
-        const nameInput = $('login-name').value.toLowerCase();
-        const pass = prompt("Masukkan Password:");
-        if (!pass) return;
-
-        const { data: user, error } = await supabase.from('users').select('*').eq('id_user', id).single();
-
-        if (user && user.name.toLowerCase() === nameInput) {
-            const hashed = await hashPassword(pass);
-            if (hashed === user.password_hash) {
-                this.data.currentUser = user;
-                sessionStorage.setItem('gms_user', JSON.stringify(user));
-                this.route();
-            } else { alert("Password Salah!"); }
-        } else { alert("Data tidak ditemukan atau ID salah."); }
-    },
-
-    route() {
-        $('view-login').classList.add('hidden');
-        const role = this.data.currentUser.role.toLowerCase();
-        if (role === 'admin') {
-            $('view-admin').classList.remove('hidden');
-            this.refreshAdmin();
-        } else {
-            $('view-employee').classList.remove('hidden');
-            $('emp-name').textContent = this.data.currentUser.name;
-            this.getLocation();
-            this.renderUserHistory();
-        }
-    },
-  function togglePassword() {
-    const passwordInput = document.getElementById('loginPass');
-    const eyeIcon = document.getElementById('eye-icon');
-    
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        // Ubah jadi ikon mata tertutup (coret)
-        eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
-    } else {
-        passwordInput.type = 'password';
-        // Kembali ke ikon mata terbuka
-        eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+    // 2. FUNGSI HASH PASSWORD (Penting agar cocok dengan DB)
+    async function hashPassword(string) {
+        const utf8 = new TextEncoder().encode(string);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
-}
 
-    // --- ABSENSI & KAMERA ---
-    async openCamera(type) {
-        if (await this.isDuplicate(type)) return alert(`Anda sudah melakukan Clock ${type} hari ini!`);
-        
-        this.currentAction = type;
-        $('camera-modal').style.display = 'flex';
-        try {
-            this.data.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-            $('webcam').srcObject = this.data.stream;
-        } catch (e) { alert("Kamera gagal dibuka: " + e.message); }
-    },
+    // 3. FUNGSI LOGIN (Nama harus persis: loginUser)
+    async function loginUser() {
+        console.log("Memulai proses login...");
+        const id = document.getElementById('loginId').value.trim();
+        const nama = document.getElementById('loginName').value.trim();
+        const pass = document.getElementById('loginPass').value;
 
-    closeCamera() {
-        if (this.data.stream) this.data.stream.getTracks().forEach(t => t.stop());
-        $('camera-modal').style.display = 'none';
-    },
-
-    async takePhoto() {
-        const video = $('webcam');
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth; 
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        
-        canvas.toBlob(async (blob) => {
-            try {
-                alert("Sedang mengunggah...");
-                const photoUrl = await uploadFile(blob, 'attendance');
-                await supabase.from('attendance').insert([{
-                    user_id: this.data.currentUser.id_user,
-                    name: this.data.currentUser.name,
-                    type: this.currentAction,
-                    lat: this.data.loc.lat,
-                    lng: this.data.loc.lng,
-                    photo_url: photoUrl
-                }]);
-                alert('Absensi Berhasil!');
-                this.closeCamera();
-                this.renderUserHistory();
-            } catch (e) { alert("Error: " + e.message); }
-        }, 'image/jpeg');
-    },
-
-    // --- PENGAJUAN (IZIN/SAKIT) ---
-    async submitPengajuan() {
-        const file = $('sub-proof').files[0];
-        const date = $('sub-date').value;
-        const desc = $('sub-desc').value;
-        if (!file || !date) return alert("Tanggal dan Bukti Foto wajib diisi!");
+        if (!id || !nama || !pass) {
+            alert("Harap isi semua kolom!");
+            return;
+        }
 
         try {
-            const url = await uploadFile(file, 'submissions');
-            const payload = {
-                user_id: this.data.currentUser.id_user,
-                name: this.data.currentUser.name,
-                type: $('sub-type').value,
-                date: date,
-                description: desc,
-                proof_url: url,
-                status: 'Pending'
-            };
-            await supabase.from('submissions').insert([payload]);
+            const { data: user, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id_user', id)
+                .single();
 
-            // Kirim WA Otomatis
-            const msg = `*PENGAJUAN GMS*%0ANama: ${payload.name}%0ATipe: ${payload.type}%0ATanggal: ${payload.date}%0ABukti: ${url}`;
-            window.open(`https://wa.me/${this.data.settings.admin_wa}?text=${msg}`, '_blank');
-            
-            alert("Pengajuan Berhasil Terkirim!");
-            this.renderUserHistory();
-        } catch (e) { alert(e.message); }
-    },
-
-    // --- ADMIN: IMPORT CSV (SESUAI FILE ANDA) ---
-    async handleImport(input) {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const lines = e.target.result.split('\n');
-            let successCount = 0;
-            
-            for (let i = 1; i < lines.length; i++) {
-                const col = lines[i].split(',');
-                if (col[0] && col[1]) {
-                    const rawPass = col[6] ? col[6].trim() : 'user123';
-                    const hashedPass = await hashPassword(rawPass);
-                    
-                    await supabase.from('users').upsert({
-                        id_user: col[0].trim(),
-                        name: col[1].trim(),
-                        work_location: col[3] ? col[3].trim() : '',
-                        role: col[5] ? col[5].trim() : 'User',
-                        password_hash: hashedPass,
-                        gps_mode: col[7] ? col[7].trim() : 'bebas'
-                    });
-                    successCount++;
-                }
+            if (error || !user) {
+                alert("ID tidak terdaftar!");
+                return;
             }
-            alert(`Berhasil mengimpor ${successCount} data karyawan.`);
-            this.refreshAdmin();
-        };
-        reader.readAsText(file);
-    },
 
-    async refreshAdmin() {
-        const { data: users } = await supabase.from('users').select('*');
-        const { data: att } = await supabase.from('attendance').select('*').order('timestamp', {ascending: false});
-        const { data: sub } = await supabase.from('submissions').select('*').order('created_at', {ascending: false});
+            // Cek Nama
+            if (user.name.toLowerCase() !== nama.toLowerCase()) {
+                alert("Nama tidak cocok dengan ID!");
+                return;
+            }
 
-        // Update Statistik Admin
-        if($('stat-total')) $('stat-total').textContent = users.length;
-        if($('stat-present')) $('stat-present').textContent = att.filter(x => new Date(x.timestamp).toDateString() === new Date().toDateString()).length;
-        if($('stat-sub-pending')) $('stat-sub-pending').textContent = sub.filter(x => x.status === 'Pending').length;
+            // Cek Password
+            const hashed = await hashPassword(pass);
+            if (user.password_hash !== hashed) {
+                alert("Password salah!");
+                return;
+            }
 
-        // Panggil fungsi render tabel admin Anda di sini
-        // this.renderAdminTables(users, att, sub); 
-    },
+            // Berhasil
+            localStorage.setItem('userGMS', JSON.stringify(user));
+            alert("Login Berhasil sebagai " + user.role);
+            
+            // Redirect sesuai role
+            if (user.role === 'Admin') {
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+            } else {
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('user-dashboard').style.display = 'block';
+            }
 
-    getLocation() {
-        navigator.geolocation.getCurrentPosition(p => {
-            this.data.loc = { lat: p.coords.latitude, lng: p.coords.longitude };
-        }, err => console.error("GPS Error:", err));
-    },
-
-    logout() {
-        sessionStorage.clear();
-        location.reload();
+        } catch (err) {
+            console.error(err);
+            alert("Koneksi bermasalah!");
+        }
     }
-};
 
-// Jalankan aplikasi
-document.addEventListener('DOMContentLoaded', () => app.init());
- // Menghubungkan tombol dengan fungsi login
-document.getElementById('btn-login').addEventListener('click', function() {
-    // Pastikan nama fungsi di bawah ini sesuai dengan nama fungsi login 
-    // yang kamu punya (biasanya bernama loginUser atau handleLogin)
-    if (typeof loginUser === "function") {
-        loginUser();
-    } else {
-        alert("Fungsi login tidak ditemukan di dalam script!");
-    }
-});             
+    // 4. PEMICU TOMBOL (Dijalankan saat halaman selesai dimuat)
+    window.onload = function() {
+        console.log("Script Siap!");
+        const btn = document.getElementById('btn-login');
+        if (btn) {
+            btn.onclick = loginUser;
+        } else {
+            console.error("Tombol dengan id 'btn-login' tidak ditemukan!");
+        }
+    };
+</script>         
 </script>
 </body>
 </html>
+
 
 
